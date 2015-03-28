@@ -13,7 +13,33 @@
 <body>
 <script type="text/javascript">
 
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
+var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload:preload,create:create,update:update,render:render});
+
+/*var stateLoad = function(game) {  };
+stateLoad.prototype = 
+{
+	preload:function() {
+    this.loader = game.load.spritesheet('meatly', 'img/meatlyjam01spritesheet.png', 512, 512);},
+	create:function() {
+    this.bg = game.add.sprite(game.world.centerX, game.world.centerY, 'meatly', 62);
+    this.bg.position.x -= this.bg.width/2;
+    this.bg.position.y -= this.bg.height/2+80;
+    game.add.tween(this.bg.position).to( { y: 100 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);
+    
+    game.state.add('game', );
+  },
+	update:function() {
+    preload();
+    
+    game.add.tween(this.bg).to( { alpha: 255}, 2000, Phaser.Easing.Quadratic.InOut, true, 0, 1, true).onComplete.addOnce(function(){game.state.start('game');});
+    
+    
+    //game.state.start('game');
+    
+  }
+}
+game.state.add('stateLoad', stateLoad);
+game.state.start('stateLoad');*/
 
 // entities
 var player;
@@ -72,8 +98,6 @@ function preload() {
     game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
 
     game.load.image('sky',        'img/sky.png');
-    game.load.image('star',       'img/star.png');
-    game.load.spritesheet('dude', 'img/dude.png', 32, 48);
     game.load.spritesheet('meatly', 'img/meatlyjam01spritesheet.png', 512, 512);
     
     game.load.audio('step_concrete', 'snd/footstep_concrete.wav');
