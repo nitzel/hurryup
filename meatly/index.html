@@ -18,12 +18,16 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create
 // entities
 var player;
 // groups
-var downFish;
-var ideaFairy;
-var workStation;
-var food;
-var nintendo;
-var wtf; // that devil thing
+var entities;
+// guys standing around blocking you ... whut!
+// that devil thing
+
+const DOWNFISH   =1;
+const IDEAFAIRY  =2;
+const WORKSTATION=4;
+const FOOD       =8;
+const NINTENDO   =16;
+const DUDE       =32;
 
 var cursors;
 // status
@@ -36,6 +40,8 @@ var projectProgress = 0;
 var sndStep;
 var sndEat;
 var sndPlayNintendo;
+var sndIdeaFairy;
+var sndDownFish;
 // texts
 var textMotivation;
 var textHunger;
@@ -73,6 +79,8 @@ function preload() {
     game.load.audio('step_concrete', 'snd/footstep_concrete.wav');
     game.load.audio('consume_food', 'snd/consume_food.wav');
     game.load.audio('consume_nintendo', 'snd/consume_nintendo.wav');
+    game.load.audio('down_fish', 'snd/down.wav');
+    game.load.audio('idea_fairy', 'snd/idea.wav');
 }
 
 function create() {
@@ -85,6 +93,13 @@ function create() {
     //  A simple background for our game
     var bg = game.add.sprite(0, 0, 'sky');
     bg.fixedToCamera = true;
+    // create level-texts    
+    textBG0 = game.add.text(32, 128, '`HEY!` welcome,\nOh, you look like you\'re `starving`!\n Have some `FOOD` and then `GO!`', { fontSize: '64px', fill: '#000'});
+    colorText(textBG0);
+    textBG0.rotation=-0.1;
+    
+    textBG1 = game.add.text(750, 280, 'Devving a game requires `motivation`\nGo ahead and `Play` some\ncool games on the `nintendo`s lying around.', { fontSize: '48px', fill: '#000'});
+    colorText(textBG1);
     // create player
     {
       player = createShadowedObject(32, game.world.height - 64, undefined, 'meatly', 21, 0.3, 0.3);
@@ -98,45 +113,56 @@ function create() {
         anim.onUpdate.add(animPlayer,this);
       });
     }
-    // create food iteams
+    // create entities
     {
-      food = game.add.group();
-      food.enableBody = true;
+      entities = game.add.group();
+      entities.enableBody = true;
+      // food items
       for (var i = 0; i < 4; i++)
       {
-          var so = createShadowedObject(i*140,400, food, 'meatly', 57, 0.3, 0.8);
+          var so = createShadowedObject(100+i*140,550-i*10, entities, 'meatly', 57, 0.3, 0.8);
+          so.name = FOOD;
           game.add.tween(so.obj.position).to( { y: -300 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);
           game.add.tween(so.shadow.scale).to( { y: 0.9, x:0.9 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);   
       }
-    }
-    // create nintendos
-    {
-      nintendo = game.add.group();
-      nintendo.enableBody = true;
-      for (var i = 0; i < 4; i++)
-      {
-          var so = createShadowedObject(800+i*140,200, nintendo, 'meatly', 58, 0.3, 0.8);
+    
+      // create nintendos
+      createNintendoAt = function(x,y){
+          var so = createShadowedObject(x,y, entities, 'meatly', 58, 0.3, 0.8);
+          so.name = NINTENDO;
           game.add.tween(so.obj.position).to( { y: -300 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);
-          game.add.tween(so.shadow.scale).to( { y: 0.9, x:0.9 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);   
+          game.add.tween(so.shadow.scale).to( { y: 0.9, x:0.9 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);  
       }
-    }
-    // create ideaFaries
-    {
-      ideaFairy = game.add.group();
-      ideaFairy.enableBody = true;
+      createNintendoAt(1200,350);  
+      createNintendoAt(1300,500);  
+      createNintendoAt(1450,400);  
+      createNintendoAt(1550,350);  
+      
+      // create ideaFaries
       for (var i = 0; i < 4; i++)
       {
-          var so = createShadowedObject(1600+i*140,200, ideaFairy, 'meatly', 52, 0.3, 0.8);
+          var so = createShadowedObject(1600+i*140,200, entities, 'meatly', 52, 0.3, 0.8);
+          so.name = IDEAFAIRY;
           so.body.velocity.x = -100;
           game.add.tween(so.obj.position).to( { y: -300 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);
           game.add.tween(so.shadow.scale).to( { y: 0.9, x:0.9 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);   
       }
+      // create downFishs
+      for (var i = 0; i < 4; i++)
+      {
+          var so = createShadowedObject(1600+i*140,500, entities, 'meatly', 50, 0.3, 0.8);
+          so.body.velocity.x = -100;
+          so.name = DOWNFISH;
+          game.add.tween(so.obj.position).to( { y: -300 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);
+          game.add.tween(so.shadow.scale).to( { y: 0.9, x:0.9 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);   
+      }
     }
-    
     // sounds
     sndStep = game.add.audio('step_concrete');
     sndEat  = game.add.audio('consume_food');
     sndPlayNintendo  = game.add.audio('consume_nintendo');
+    sndIdeaFairy = game.add.audio('idea_fairy');
+    sndDownFish  = game.add.audio('down_fish');
     
     //  The score, will be in front of everything
     textHunger = game.add.text(16, 16, 'hunger: `0', { fontSize: '32px', fill: '#000'/*'#B03A00'*/ });
@@ -146,11 +172,6 @@ function create() {
     textMotivation.fixedToCamera = true;
     colorText(textMotivation);
     
-    textBG0 = game.add.text(32, 128, '`HEY!` welcome,\nHave some `FOOD` and then `GO!`', { fontSize: '64px', fill: '#000'});
-    colorText(textBG0);
-    textBG1 = game.add.text(700, 270, '`Devving` a game requires `motivation`\nYou can get it by `playing` \ncool games on the `nintendo`.', { fontSize: '48px', fill: '#000'});
-    colorText(textBG1);
-    
     cursors = game.input.keyboard.createCursorKeys();
     
     //let camera follow the player
@@ -158,8 +179,7 @@ function create() {
 }
 
 function update() {
-    game.physics.arcade.overlap(player, food, collFood, null, this);
-    game.physics.arcade.overlap(player, nintendo, collNintendo, null, this);
+    game.physics.arcade.overlap(player, entities, collideEntities, null, this);
         //  Reset the players velocity (movement)
     player.body.velocity.x = 0;
     player.body.velocity.y = 0;
@@ -212,19 +232,32 @@ function update() {
       Math.max(game.camera.x-300, game.world.bounds.x),0,1500,600);
 }
 
-function collFood (player, food) {
-    // Removes the food from the screen
-    food.kill();
-    hunger-=1;
-    textHunger.text = 'hunger: ' + hunger;
-    sndEat.play();
-}
-function collNintendo (player, ninto) {
-    // Removes the nintendo from the screen
-    ninto.kill();
-    motivation+=25;
-    textMotivation.text = 'motivation: ' + motivation;
-    sndPlayNintendo.play();
+function collideEntities (player, ent) {
+    if(ent.name & (DOWNFISH | IDEAFAIRY | FOOD | NINTENDO)){
+      // Removes the food from the screen
+      ent.kill();
+    }
+    switch(ent.name){
+    case FOOD:
+      hunger-=1;
+      textHunger.text = 'hunger: ' + hunger;
+      sndEat.play();
+    break;
+    case DOWNFISH:
+      motivation-=50;
+      sndDownFish.play();
+    break
+    case IDEAFAIRY:
+      ideaCount++;
+      sndIdeaFairy.play();
+    break
+    case NINTENDO:
+      motivation+=25;
+      textMotivation.text = 'motivation: ' + motivation;
+      sndPlayNintendo.play();
+    break
+    
+    }
 }
 
 function animPlayer(sprite, animation) {
@@ -235,11 +268,8 @@ function animPlayer(sprite, animation) {
 
 function render(){
     game.debug.body(player);
-    food.forEach(function(f){
-      game.debug.body(f);
-    });
-    nintendo.forEach(function(f){
-      game.debug.body(f);
+    entities.forEach(function(ent){
+      game.debug.body(ent);
     });
 }
 
@@ -278,6 +308,7 @@ function createShadowedObject(x, y, group, spritesheet, frame, compositScale, sh
     shadow.position.x = 256
     shadow.position.y = 128
     shadow.scale.setTo(shadowScale,shadowScale);
+    shadow.alpha = 0.8;
     // create obj
     var obj = game.add.sprite(0,0,spritesheet, frame); // 21 any meatly frame
     obj.pivot.x = (obj.x+obj.width)/2;

@@ -24,4 +24,6 @@ submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.co
 - 17:29 Uff finally shadowed objects get created correctly! that was not too easy. Why does PHASER have to scale the width/height of a bounding box, but NOT the offset??? **todo** report as maybe-bug
 - 17:40 Fixed background
 - 19:26 Added some sounds, fairy and nintendo
+- 21:04 cooked some nice meal. no idea how i get a simple z-order for my sprites yet :(
+- 22:29 looked for some music, didnt find any. Added some sounds and the downfish. Entities are now grouped, maybe I can do sth about the visibility/zorder
 # [credits](credits.md)
