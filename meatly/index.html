@@ -24,6 +24,8 @@ var hunger = 0;
 var textMotivation;
 var textHunger;
 
+var sndStep;
+
 //  The Google WebFont Loader will look for this object, so create it before loading the script.
 WebFontConfig = {
     //  'active' means all requested fonts have finished loading
@@ -47,6 +49,8 @@ function preload() {
     game.load.image('star',       'img/star.png');
     game.load.spritesheet('dude', 'img/dude.png', 32, 48);
     game.load.spritesheet('meatly', 'img/meatlyjam01spritesheet.png', 512, 512);
+    
+    game.load.audio('step_concrete', 'snd/footstep_concrete.wav');
 }
 
 function create() {
@@ -59,24 +63,37 @@ function create() {
     
     
     // The player and its settings
-    player = game.add.sprite(32, game.world.height - 512, 'meatly');
-    player.scale.setTo(0.5,0.5);
+    player = game.add.sprite(32, game.world.height - 64,null);
     //  We need to enable physics on the player
     game.physics.arcade.enable(player);
-
     player.body.collideWorldBounds = true;
-    player.body.setSize(160,80,80,220);
+    player.body.setSize(160,80,0,0);
+    player.body.setSize(160,80,0,0);
+    
+    player.player = game.add.sprite(0,0, 'meatly');
+
     //  Our two animations, walking left and right.
-    player.animations.add('left', [0, 1, 2, 3, 4, 5, 6, 7], 10, true);
-    player.animations.add('right', [15, 14, 13, 12, 11, 10, 9, 8], 10, true);
+    anims = [];
+    anims.push(player.player.animations.add('left', [3, 4, 5, 6, 7, 0, 1, 2], 10, true));
+    anims.push(player.player.animations.add('right', [12, 11, 10, 9, 8, 15, 14, 13, ], 10, true));
+    anims.forEach(function(anim){
+      anim.enableUpdate=true;
+      anim.onUpdate.add(animPlayer,this);
+    });
     // playerShadow
     player.shadow = game.add.graphics();
     player.shadow.beginFill(0xB03A00);
-    player.shadow.drawEllipse(0,0,80,40);
+    player.shadow.drawEllipse(80,40,80,40);
     player.shadow.endFill();
+    
     player.addChild(player.shadow); // add to player as child
-    player.shadow.position.x = 240;
-    player.shadow.position.y = 480;
+    player.addChild(player.player); // add to player as child
+    player.player.position.x = -player.player.width/2+player.body.width/2;
+    player.player.position.y = -player.player.height+player.body.height*3/4;
+    player.shadow.position.x = 0;
+    player.shadow.position.y = 0;
+    player.scale.setTo(0.5,0.5);
+    
 
     
     stars = game.add.group();
@@ -94,6 +111,10 @@ function create() {
         star.body.bounce.y = 0.7 + Math.random() * 0.2;
         star.body.collideWorldBounds = true;
     }
+    
+    // sounds
+    sndStep = game.add.audio('step_concrete');
+    
     //  The score, will be in front of everything
     textHunger = game.add.text(16, 16, 'hunger: 0', { fontSize: '32px', fill: '#000'/*'#B03A00'*/ });
     textMotivation = game.add.text(16, 48, 'motivation: 0', { fontSize: '32px', fill: '#000'});
@@ -109,37 +130,37 @@ function update() {
 
     if(cursors.up.isDown){
       player.body.velocity.y = -350;
-      player.animations.play('right');
+      player.player.animations.play('right');
     }
     else if(cursors.down.isDown){
       player.body.velocity.y = 350;
-      player.animations.play('right');
+      player.player.animations.play('right');
     }
     else if (cursors.left.isDown)
     {
         //  Move to the left
         player.body.velocity.x = -400;
 
-        player.animations.play('left');
+        player.player.animations.play('left');
     }
     else if (cursors.right.isDown)
     {
         //  Move to the right
         player.body.velocity.x = 400;
 
-        player.animations.play('right');
+        player.player.animations.play('right');
     }
     else
     {
         //  Stand still
-        player.animations.stop();
+        player.player.animations.stop();
         
         if(motivation>=50)
-          player.frame = 19;
+          player.player.frame = 19;
         else if (motivation>=25)
-          player.frame = 17;
+          player.player.frame = 17;
         else 
-          player.frame = 21
+          player.player.frame = 21
     }
     
     //  Allow the player to jump if they are touching the ground.
@@ -159,6 +180,12 @@ function collectStar (player, star) {
     textHunger.text = 'hunger: ' + hunger;
     
 
+}
+var animation2;
+function animPlayer(sprite, animation) {
+  if([0,4,11,15,17,19,21].indexOf(animation.index) != -1) { // frame in array
+    sndStep.play();
+  }
 }
 
 function render(){

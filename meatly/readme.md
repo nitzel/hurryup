@@ -13,5 +13,4 @@ submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.co
 - 00:06 ate, played around with phaser examples and founda googlefont which is okay. not good, but okay. its free :) there is another one that looks better, but its not free :(
 - 07:48 up again and ready to rumble.
 
-# credits
-`meatlyjam spritesheet` by `themeatly`
+# [credits](credits.md)
