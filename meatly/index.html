@@ -75,56 +75,27 @@ function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     //  A simple background for our game
-    game.add.sprite(0, 0, 'sky');
-    
-    
-    // The player and its settings
-    player = game.add.sprite(32, game.world.height - 64,null);
-    //  We need to enable physics on the player
-    game.physics.arcade.enable(player);
+    var bg = game.add.sprite(0, 0, 'sky');
+    bg.fixedToCamera = true;
+    // create player
+    player = createShadowedObject(32, game.world.height - 64, undefined, 'meatly', 21, 0.3, 0.3);
     player.body.collideWorldBounds = true;
-    player.body.setSize(160,80,0,0);
-    
-    player.player = game.add.sprite(0,0, 'meatly');
-    //  Our two animations, walking left and right.
+    // add animations to it
     anims = [];
-    anims.push(player.player.animations.add('left', [3, 4, 5, 6, 7, 0, 1, 2], 10, true));
-    anims.push(player.player.animations.add('right', [12, 11, 10, 9, 8, 15, 14, 13, ], 10, true));
+    anims.push(player.obj.animations.add('left', [3, 4, 5, 6, 7, 0, 1, 2], 10, true));
+    anims.push(player.obj.animations.add('right', [12, 11, 10, 9, 8, 15, 14, 13, ], 10, true));
     anims.forEach(function(anim){
       anim.enableUpdate=true;
       anim.onUpdate.add(animPlayer,this);
     });
-    // playerShadow
-    player.shadow = game.add.graphics();
-    player.shadow.beginFill(0xDDEEFF); //0xB03A00
-    player.shadow.drawEllipse(80,40,80,40);
-    player.shadow.endFill();
-    // compose player
-    player.addChild(player.shadow); // add to player as child
-    player.addChild(player.player); // add to player as child
-    player.player.position.x = -player.player.width/2+player.body.width/2;
-    player.player.position.y = -player.player.height+player.body.height*3/4;
-    player.shadow.position.x = 0;
-    player.shadow.position.y = 0;
-    player.scale.setTo(0.5,0.5);
-    
-    
-    stars = game.add.group();
-    stars.enableBody = true;
-    //  Here we'll create 12 of them evenly spaced apart
+    // add food iteams
+    food = game.add.group();
+    food.enableBody = true;
     for (var i = 0; i < 4; i++)
     {
-        //  Create a star inside of the 'stars' group
-        var star = stars.create(i * 160, 0, 'meatly', 57); // 57 is burger-frame
-
-        //  Let gravity do its thing
-        star.body.gravity.y = 300;
-
-        //  This just gives each star a slightly random bounce value
-        star.body.bounce.y = 0.7 + Math.random() * 0.2;
-        star.body.collideWorldBounds = true;
-        
-        star.scale.setTo(0.3,0.3);
+        var so = createShadowedObject(i*140,400, food, 'meatly', 57, 0.3, 0.8);
+        game.add.tween(so.obj.position).to( { y: -300 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);
+        game.add.tween(so.shadow.scale).to( { y: 0.9, x:0.9 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);   
     }
     
     // sounds
@@ -150,7 +121,7 @@ function create() {
 }
 
 function update() {
-    game.physics.arcade.overlap(player, stars, collFood, null, this);
+    game.physics.arcade.overlap(player, food, collFood, null, this);
         //  Reset the players velocity (movement)
     player.body.velocity.x = 0;
     player.body.velocity.y = 0;
@@ -174,23 +145,23 @@ function update() {
     
     if (left)
     {
-      player.player.animations.play('left');
+      player.obj.animations.play('left');
     }
     else if (right || up || down)
     {
-        player.player.animations.play('right');
+        player.obj.animations.play('right');
     }
     else
     {
         //  Stand still
-        player.player.animations.stop();
+        player.obj.animations.stop();
         
         if(motivation>=50)
-          player.player.frame = 19;
+          player.obj.frame = 19;
         else if (motivation>=25)
-          player.player.frame = 17;
+          player.obj.frame = 17;
         else 
-          player.player.frame = 21
+          player.obj.frame = 21
     }
     
     //  Allow the player to jump if they are touching the ground.
@@ -198,6 +169,9 @@ function update() {
     {
         player.body.velocity.y = -350;
     } */
+    
+    game.world.setBounds(
+      Math.max(game.camera.x-300, game.world.bounds.x),0,1500,600);
 }
 
 function collFood (player, food) {
@@ -215,10 +189,10 @@ function animPlayer(sprite, animation) {
 }
 
 function render(){
-    //game.debug.body(player);
-    //stars.forEach(function(star){
-    //  game.debug.body(star);
-    //});
+    game.debug.body(player);
+    food.forEach(function(f){
+      game.debug.body(f);
+    });
 }
 
 function colorText(phaserTextObj){
@@ -235,6 +209,65 @@ function colorText(phaserTextObj){
     }
   }
   phaserTextObj.text = text; // because of deepcopy we have to overwrite it again
+}
+
+function createShadowedObject(x, y, group, spritesheet, frame, compositScale, shadowScale, objScale, shadowColor){
+    // default params
+    x = x||0;
+    y = y||0;
+    group = group || undefined; // stays undefined
+    spritesheet = spritesheet||'meatly';
+    frame = frame || 0;
+    compositScale = compositScale || 1.0;
+    shadowScale = shadowScale || 1.0;
+    objScale = objScale || 1.0 ;
+    shadowColor = shadowColor || '0xDDEEFF';
+    // create shadow
+    var shadow = game.add.graphics();
+    shadow.beginFill(shadowColor); 
+    shadow.drawEllipse(0,0,256,128);
+    shadow.endFill();
+    shadow.position.x = 256
+    shadow.position.y = 128
+    shadow.scale.setTo(shadowScale,shadowScale);
+    // create obj
+    var obj = game.add.sprite(0,0,spritesheet, frame); // 21 any meatly frame
+    obj.pivot.x = (obj.x+obj.width)/2;
+    obj.pivot.y = (obj.y+obj.height)/2;
+    obj.position.x = 256;
+    obj.position.y = -128;
+    obj.scale.setTo(objScale,objScale);
+    // create composit 
+    var composit;
+    if(group==undefined){
+      composit = game.add.sprite(x,y,null);
+      game.physics.arcade.enable(composit);
+    }
+    else 
+      composit = group.create(x, y, null);
+    
+    composit.body.setSize(512,256,0,0);
+    composit.pivot.position = composit.body.center;
+    composit.scale.setTo(shadowScale,shadowScale);
+    const RW = 256*shadowScale; // radius horizontal
+    const RH = 128*shadowScale; // radius vertical
+    //composit.body.setSize(SHADOW_RH*2,SHADOW_RV*2,512/2-SHADOW_RH*2,256/2-SHADOW_RH*2);
+    
+    x = (composit.body.width/2-RW)*compositScale;
+    y = (composit.body.height/2-RH)*compositScale;
+    w = RW*2;
+    h = RH*2;
+    composit.body.setSize(w,h,x,y);
+    
+    
+    
+    composit.addChild(shadow);
+    composit.shadow = shadow;
+    composit.addChild(obj);
+    composit.obj = obj;
+    composit.scale.setTo(compositScale,compositScale);
+    // return it
+    return composit;
 }
 </script>
 
