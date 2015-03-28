@@ -18,4 +18,6 @@ submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.co
 - 13:30 new ideas regarding intro :)
 - 13:45 camera targets player, fixed texts
 - 14:56 colored text :) that linebreak-thing took me a while...
+- 15:04 that linebreak-thing is still not working completely! GNAH!
+- 15:10 got'cha! finally
 # [credits](credits.md)

@@ -15,9 +15,17 @@
 
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
 
+// entities
 var player;
+// groups
+var downFish;
+var ideaFairy;
+var workStation;
+var food;
+var nintendo;
+var wtf; // that devil thing
+
 var cursors;
-var stars;
 
 var motivation = 00;
 var hunger = 0;
@@ -107,7 +115,7 @@ function create() {
     for (var i = 0; i < 4; i++)
     {
         //  Create a star inside of the 'stars' group
-        var star = stars.create(i * 70, 0, 'meatly', 57);
+        var star = stars.create(i * 160, 0, 'meatly', 57); // 57 is burger-frame
 
         //  Let gravity do its thing
         star.body.gravity.y = 300;
@@ -130,9 +138,9 @@ function create() {
     textMotivation.fixedToCamera = true;
     colorText(textMotivation);
     
-    textBG0 = game.add.text(32, 128, '`HEY!` welcome,\nHave some `FOOD` and then`GO!`', { fontSize: '32px', fill: '#000'});
+    textBG0 = game.add.text(32, 128, '`HEY!` welcome,\nHave some `FOOD` and then `GO!`', { fontSize: '64px', fill: '#000'});
     colorText(textBG0);
-    textBG1 = game.add.text(780, 128, '`Devving` a game requires `motivation`\nYou can get it by `playing` \ncool games on the `nitendo`', { fontSize: '32px', fill: '#000'});
+    textBG1 = game.add.text(700, 270, '`Devving` a game requires `motivation`\nYou can get it by `playing` \ncool games on the `nitendo`.', { fontSize: '48px', fill: '#000'});
     colorText(textBG1);
     
     cursors = game.input.keyboard.createCursorKeys();
@@ -208,9 +216,9 @@ function animPlayer(sprite, animation) {
 
 function render(){
     //game.debug.body(player);
-    stars.forEach(function(star){
-      game.debug.body(star);
-    });
+    //stars.forEach(function(star){
+    //  game.debug.body(star);
+    //});
 }
 
 function colorText(phaserTextObj){
@@ -218,11 +226,12 @@ function colorText(phaserTextObj){
   var C = false;
   var n = 0;
   for(var i = 0; i<text.length; i++){
-    if(text[i]=='\n') n++
+    if(text[i]=='\n') n++;
     if(text[i]=='`'){
       text = text.substr(0,i)+text.substr(i+1);
       phaserTextObj.addColor(C?'#000':'#B03A00', i-n);
       C=!C;
+      i--;
     }
   }
   phaserTextObj.text = text; // because of deepcopy we have to overwrite it again
