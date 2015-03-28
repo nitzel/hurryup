@@ -23,4 +23,5 @@ submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.co
 - 17:00 Half the time's over! 24h left **gogogo**
 - 17:29 Uff finally shadowed objects get created correctly! that was not too easy. Why does PHASER have to scale the width/height of a bounding box, but NOT the offset??? **todo** report as maybe-bug
 - 17:40 Fixed background
+- 19:26 Added some sounds, fairy and nintendo
 # [credits](credits.md)
