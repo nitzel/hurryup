@@ -26,15 +26,21 @@ var nintendo;
 var wtf; // that devil thing
 
 var cursors;
-
+// status
 var motivation = 00;
 var hunger = 0;
+var ideaCount = 0;
+var projectProgress = 0;
+
+// sounds
+var sndStep;
+var sndEat;
+var sndPlayNintendo;
+// texts
 var textMotivation;
 var textHunger;
 var textBG0;
 var textBG1;
-
-var sndStep;
 
 //  The Google WebFont Loader will look for this object, so create it before loading the script.
 WebFontConfig = {
@@ -65,6 +71,8 @@ function preload() {
     game.load.spritesheet('meatly', 'img/meatlyjam01spritesheet.png', 512, 512);
     
     game.load.audio('step_concrete', 'snd/footstep_concrete.wav');
+    game.load.audio('consume_food', 'snd/consume_food.wav');
+    game.load.audio('consume_nintendo', 'snd/consume_nintendo.wav');
 }
 
 function create() {
@@ -78,28 +86,57 @@ function create() {
     var bg = game.add.sprite(0, 0, 'sky');
     bg.fixedToCamera = true;
     // create player
-    player = createShadowedObject(32, game.world.height - 64, undefined, 'meatly', 21, 0.3, 0.3);
-    player.body.collideWorldBounds = true;
-    // add animations to it
-    anims = [];
-    anims.push(player.obj.animations.add('left', [3, 4, 5, 6, 7, 0, 1, 2], 10, true));
-    anims.push(player.obj.animations.add('right', [12, 11, 10, 9, 8, 15, 14, 13, ], 10, true));
-    anims.forEach(function(anim){
-      anim.enableUpdate=true;
-      anim.onUpdate.add(animPlayer,this);
-    });
-    // add food iteams
-    food = game.add.group();
-    food.enableBody = true;
-    for (var i = 0; i < 4; i++)
     {
-        var so = createShadowedObject(i*140,400, food, 'meatly', 57, 0.3, 0.8);
-        game.add.tween(so.obj.position).to( { y: -300 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);
-        game.add.tween(so.shadow.scale).to( { y: 0.9, x:0.9 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);   
+      player = createShadowedObject(32, game.world.height - 64, undefined, 'meatly', 21, 0.3, 0.3);
+      player.body.collideWorldBounds = true;
+      // add animations to it
+      anims = [];
+      anims.push(player.obj.animations.add('left', [3, 4, 5, 6, 7, 0, 1, 2], 10, true));
+      anims.push(player.obj.animations.add('right', [12, 11, 10, 9, 8, 15, 14, 13, ], 10, true));
+      anims.forEach(function(anim){
+        anim.enableUpdate=true;
+        anim.onUpdate.add(animPlayer,this);
+      });
+    }
+    // create food iteams
+    {
+      food = game.add.group();
+      food.enableBody = true;
+      for (var i = 0; i < 4; i++)
+      {
+          var so = createShadowedObject(i*140,400, food, 'meatly', 57, 0.3, 0.8);
+          game.add.tween(so.obj.position).to( { y: -300 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);
+          game.add.tween(so.shadow.scale).to( { y: 0.9, x:0.9 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);   
+      }
+    }
+    // create nintendos
+    {
+      nintendo = game.add.group();
+      nintendo.enableBody = true;
+      for (var i = 0; i < 4; i++)
+      {
+          var so = createShadowedObject(800+i*140,200, nintendo, 'meatly', 58, 0.3, 0.8);
+          game.add.tween(so.obj.position).to( { y: -300 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);
+          game.add.tween(so.shadow.scale).to( { y: 0.9, x:0.9 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);   
+      }
+    }
+    // create ideaFaries
+    {
+      ideaFairy = game.add.group();
+      ideaFairy.enableBody = true;
+      for (var i = 0; i < 4; i++)
+      {
+          var so = createShadowedObject(1600+i*140,200, ideaFairy, 'meatly', 52, 0.3, 0.8);
+          so.body.velocity.x = -100;
+          game.add.tween(so.obj.position).to( { y: -300 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);
+          game.add.tween(so.shadow.scale).to( { y: 0.9, x:0.9 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);   
+      }
     }
     
     // sounds
     sndStep = game.add.audio('step_concrete');
+    sndEat  = game.add.audio('consume_food');
+    sndPlayNintendo  = game.add.audio('consume_nintendo');
     
     //  The score, will be in front of everything
     textHunger = game.add.text(16, 16, 'hunger: `0', { fontSize: '32px', fill: '#000'/*'#B03A00'*/ });
@@ -111,7 +148,7 @@ function create() {
     
     textBG0 = game.add.text(32, 128, '`HEY!` welcome,\nHave some `FOOD` and then `GO!`', { fontSize: '64px', fill: '#000'});
     colorText(textBG0);
-    textBG1 = game.add.text(700, 270, '`Devving` a game requires `motivation`\nYou can get it by `playing` \ncool games on the `nitendo`.', { fontSize: '48px', fill: '#000'});
+    textBG1 = game.add.text(700, 270, '`Devving` a game requires `motivation`\nYou can get it by `playing` \ncool games on the `nintendo`.', { fontSize: '48px', fill: '#000'});
     colorText(textBG1);
     
     cursors = game.input.keyboard.createCursorKeys();
@@ -122,6 +159,7 @@ function create() {
 
 function update() {
     game.physics.arcade.overlap(player, food, collFood, null, this);
+    game.physics.arcade.overlap(player, nintendo, collNintendo, null, this);
         //  Reset the players velocity (movement)
     player.body.velocity.x = 0;
     player.body.velocity.y = 0;
@@ -175,11 +213,18 @@ function update() {
 }
 
 function collFood (player, food) {
-    
-    // Removes the star from the screen
+    // Removes the food from the screen
     food.kill();
     hunger-=1;
     textHunger.text = 'hunger: ' + hunger;
+    sndEat.play();
+}
+function collNintendo (player, ninto) {
+    // Removes the nintendo from the screen
+    ninto.kill();
+    motivation+=25;
+    textMotivation.text = 'motivation: ' + motivation;
+    sndPlayNintendo.play();
 }
 
 function animPlayer(sprite, animation) {
@@ -191,6 +236,9 @@ function animPlayer(sprite, animation) {
 function render(){
     game.debug.body(player);
     food.forEach(function(f){
+      game.debug.body(f);
+    });
+    nintendo.forEach(function(f){
       game.debug.body(f);
     });
 }
