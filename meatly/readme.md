@@ -17,5 +17,5 @@ submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.co
 - 12:32 equal speed in all directions when walking
 - 13:30 new ideas regarding intro :)
 - 13:45 camera targets player, fixed texts
-
+- 14:56 colored text :) that linebreak-thing took me a while...
 # [credits](credits.md)
