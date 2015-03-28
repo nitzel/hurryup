@@ -27,4 +27,5 @@ submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.co
 - 21:04 cooked some nice meal. no idea how i get a simple z-order for my sprites yet :(
 - 22:29 looked for some music, didnt find any. Added some sounds and the downfish. Entities are now grouped, maybe I can do sth about the visibility/zorder
 - 23:47 not productive ... failed at loading screen xD
+- 00:01 gotta get some sleep. tomorrow there are still around 10hrs to do it!
 # [credits](credits.md)
