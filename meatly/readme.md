@@ -10,6 +10,8 @@ submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.co
 - 18:36 oh my, time flies. where did these 96minutes go? But I got a simple Idea. *Just make something*, right? This will be **awesome**.
 - 19:13 downloaded phaser.js - how does it work?
 - 20:23 finished phaser.js tutorial. **not too confident**
+- 00:06 ate, played around with phaser examples and founda googlefont which is okay. not good, but okay. its free :) there is another one that looks better, but its not free :(
+- 07:48 up again and ready to rumble.
 
 # credits
 `meatlyjam spritesheet` by `themeatly`
