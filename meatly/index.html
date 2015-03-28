@@ -68,7 +68,6 @@ function create() {
     game.physics.arcade.enable(player);
     player.body.collideWorldBounds = true;
     player.body.setSize(160,80,0,0);
-    player.body.setSize(160,80,0,0);
     
     player.player = game.add.sprite(0,0, 'meatly');
 
@@ -127,27 +126,30 @@ function update() {
         //  Reset the players velocity (movement)
     player.body.velocity.x = 0;
     player.body.velocity.y = 0;
-
-    if(cursors.up.isDown){
-      player.body.velocity.y = -350;
-      player.player.animations.play('right');
+    
+    var up    = cursors.up.isDown;
+    var down  = cursors.down.isDown;
+    var left  = cursors.left.isDown;
+    var right = cursors.right.isDown;
+    
+    if(left || up || down || right) { // moving
+      if(left)
+        player.body.velocity.x = -1;
+      else if(right)
+        player.body.velocity.x =  1;
+      if(up)
+        player.body.velocity.y = -1;
+      else if(down)
+        player.body.velocity.y =  1;
+      player.body.velocity.normalize().multiply(400,400); // speed of 400 in every direction
     }
-    else if(cursors.down.isDown){
-      player.body.velocity.y = 350;
-      player.player.animations.play('right');
-    }
-    else if (cursors.left.isDown)
+    
+    if (left)
     {
-        //  Move to the left
-        player.body.velocity.x = -400;
-
-        player.player.animations.play('left');
+      player.player.animations.play('left');
     }
-    else if (cursors.right.isDown)
+    else if (right || up || down)
     {
-        //  Move to the right
-        player.body.velocity.x = 400;
-
         player.player.animations.play('right');
     }
     else
@@ -181,7 +183,7 @@ function collectStar (player, star) {
     
 
 }
-var animation2;
+
 function animPlayer(sprite, animation) {
   if([0,4,11,15,17,19,21].indexOf(animation.index) != -1) { // frame in array
     sndStep.play();

@@ -12,5 +12,8 @@ submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.co
 - 20:23 finished phaser.js tutorial. **not too confident**
 - 00:06 ate, played around with phaser examples and founda googlefont which is okay. not good, but okay. its free :) there is another one that looks better, but its not free :(
 - 07:48 up again and ready to rumble.
+- 11:56 shadow and sound added
+- 12:00 17hours are gone. forever! :( And I still need to dig more into this **phaser** framework thing.
+- 12:32 equal speed in all directions when walking
 
 # [credits](credits.md)
