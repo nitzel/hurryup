@@ -54,6 +54,8 @@ function preload() {
 }
 
 function create() {
+    game.world.setBounds(0,0,1600,600);
+
 
     //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -70,7 +72,6 @@ function create() {
     player.body.setSize(160,80,0,0);
     
     player.player = game.add.sprite(0,0, 'meatly');
-
     //  Our two animations, walking left and right.
     anims = [];
     anims.push(player.player.animations.add('left', [3, 4, 5, 6, 7, 0, 1, 2], 10, true));
@@ -84,7 +85,7 @@ function create() {
     player.shadow.beginFill(0xB03A00);
     player.shadow.drawEllipse(80,40,80,40);
     player.shadow.endFill();
-    
+    // compose player
     player.addChild(player.shadow); // add to player as child
     player.addChild(player.player); // add to player as child
     player.player.position.x = -player.player.width/2+player.body.width/2;
@@ -116,9 +117,14 @@ function create() {
     
     //  The score, will be in front of everything
     textHunger = game.add.text(16, 16, 'hunger: 0', { fontSize: '32px', fill: '#000'/*'#B03A00'*/ });
+    textHunger.fixedToCamera = true;
     textMotivation = game.add.text(16, 48, 'motivation: 0', { fontSize: '32px', fill: '#000'});
+    textMotivation.fixedToCamera = true;
     
     cursors = game.input.keyboard.createCursorKeys();
+    
+    //let camera follow the player
+    game.camera.target = player;
 }
 
 function update() {

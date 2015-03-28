@@ -15,5 +15,7 @@ submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.co
 - 11:56 shadow and sound added
 - 12:00 17hours are gone. forever! :( And I still need to dig more into this **phaser** framework thing.
 - 12:32 equal speed in all directions when walking
+- 13:30 new ideas regarding intro :)
+- 13:45 camera targets player, fixed texts
 
 # [credits](credits.md)
