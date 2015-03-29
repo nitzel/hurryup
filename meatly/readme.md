@@ -2,7 +2,7 @@
 ![screenshot](screen.png)
 # meatly
 submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.com "tada")
-
+**DAMN IT!** its not working as it should. That means, there is only a tutorial playable :(
 # timeline (GMT+1)
 - 16:00 uff, exam is over! Lets get home.
 - 17:00 meatlyjam starts! My first gamejam!!! Wuhu :banana:
