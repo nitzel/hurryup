@@ -143,8 +143,8 @@ function create() {
 
     // create player
     {
-      player = createShadowedObject(11000, game.world.height - 64, undefined, 'meatly', 21, 0.3, 0.3);
-      //player.body.collideWorldBounds = true; // todo turn on again!
+      player = createShadowedObject(0, game.world.height - 64, undefined, 'meatly', 21, 0.3, 0.3);
+      player.body.collideWorldBounds = true; // todo turn on again!
       player.checkWorldBounds = false; // or it will get destroyed :(
       // add animations to it
       var anims = [];
