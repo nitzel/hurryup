@@ -135,6 +135,7 @@ function create() {
     {
       player = createShadowedObject(0, game.world.height - 64, undefined, 'meatly', 21, 0.3, 0.3);
       player.body.collideWorldBounds = true;
+      player.checkWorldBounds = false; // or it will get destroyed :(
       // add animations to it
       anims = [];
       anims.push(player.obj.animations.add('left', [3, 4, 5, 6, 7, 0, 1, 2], 10, true));
@@ -189,14 +190,14 @@ function create() {
           var so = createEntity(1800,100+i*400, WORKSTATION, 48, 0.5, false);
       }
     }
-    // sounds
-    sndStep = game.add.audio('step_concrete');
-    sndEat  = game.add.audio('consume_food');
-    sndPlayNintendo  = game.add.audio('consume_nintendo');
-    sndIdeaFairy = game.add.audio('idea_fairy');
-    sndDownFish  = game.add.audio('down_fish');
-    sndWorkstation  = game.add.audio('key_strokes');
-    
+    // configure sounds
+    sndStep        = game.add.audio('step_concrete');    sndStep        .volume = 4;
+    sndEat         = game.add.audio('consume_food');     sndEat         .volume = 1;
+    sndPlayNintendo= game.add.audio('consume_nintendo'); sndPlayNintendo.volume = 4;
+    sndIdeaFairy   = game.add.audio('idea_fairy');       sndIdeaFairy   .volume = 1;
+    sndDownFish    = game.add.audio('down_fish');        sndDownFish    .volume = 0.8;
+    sndWorkstation = game.add.audio('key_strokes');      sndWorkstation .volume = 4;
+                                                         
     // setup hud
     {
       hud = game.add.sprite(256,256,'meatly', 56);
@@ -447,7 +448,6 @@ function createShadowedObject(x, y, group, spritesheet, frame, compositScale, sh
       composit = group.create(x, y, null);
     
     composit.body.setSize(512,256,0,0);
-    composit.checkWorldBounds = true;
     composit.pivot.position = composit.body.center;
     composit.scale.setTo(shadowScale,shadowScale);
     const RW = 256*shadowScale; // radius horizontal
@@ -467,7 +467,8 @@ function createShadowedObject(x, y, group, spritesheet, frame, compositScale, sh
     composit.addChild(obj);
     composit.obj = obj;
     composit.scale.setTo(compositScale,compositScale);
-    
+    // what happens when leaving world/coming in again?
+    composit.checkWorldBounds = true;
     composit.velocity = new Phaser.Point(0, 0);
     composit.events.onEnterBounds.add(
       function(ent){

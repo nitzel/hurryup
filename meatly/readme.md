@@ -37,5 +37,5 @@ submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.co
 - 12:48 now we deal with pause-time :) its not subtracted from the time you have
 - 13:11 hunger and motivation grow now by time, and its checked that they stay in range.
 - 13:53 entities start moving as soon as they enter "world" which is close to view. they get destroyed when they leave it again.
-
+- 14:21 adapted sound-volumes. and player got also destroyed, fixed that
 # [credits](credits.md)
