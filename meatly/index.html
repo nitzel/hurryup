@@ -45,6 +45,7 @@ game.state.start('stateLoad');*/
 var player;
 // groups
 var entA = []; // array to sort entities depending on y-value (which is like z)
+var gBg; // background group
 // guys standing around blocking you ... whut!
 // that devil thing
 
@@ -122,19 +123,24 @@ function create() {
     // set resume-callback to correct timer
     game.onResume.add(function(){projectTimeStart+=game.time.pauseDuration;});
     
+    // configure sounds
+    sndStep        = game.add.audio('step_concrete');    sndStep        .volume = 4;
+    sndEat         = game.add.audio('consume_food');     sndEat         .volume = 1;
+    sndPlayNintendo= game.add.audio('consume_nintendo'); sndPlayNintendo.volume = 4;
+    sndIdeaFairy   = game.add.audio('idea_fairy');       sndIdeaFairy   .volume = 1;
+    sndDownFish    = game.add.audio('down_fish');        sndDownFish    .volume = 0.8;
+    sndWorkstation = game.add.audio('key_strokes');      sndWorkstation .volume = 4;
     
+    // create background group
+    gBg = game.add.group();
     //  A simple background for our game
-    var bg = game.add.sprite(0, 0, 'sky');
-    bg.fixedToCamera = true;
-    // create level-texts    
+    game.add.sprite(0, 0, 'sky',0,gBg).fixedToCamera = true;
     
-    addText(32, 128, '`HEY!` welcome,\nOh, you look like you\'re `starving`!\nHave some `FOOD` and then `GO!`', { fontSize: '64px', fill: '#000'}, -0.1);
-    
-    addText(750, 280, 'Devving a game requires `motivation`\nGo ahead and `Play` some\ncool games on the `nintendo`s lying around.', { fontSize: '48px', fill: '#000'});
+
     // create player
     {
       player = createShadowedObject(0, game.world.height - 64, undefined, 'meatly', 21, 0.3, 0.3);
-      player.body.collideWorldBounds = true;
+      player.body.collideWorldBounds = true; // todo turn on again!
       player.checkWorldBounds = false; // or it will get destroyed :(
       // add animations to it
       var anims = [];
@@ -146,7 +152,9 @@ function create() {
       });
     }
     // create entities
+    var hud_position; // the hud will be created here as an obj on the map
     {
+      // first we need some groups
       var groupHeight = 23;//Math.floor(player.body.height);
       var groupCount = Math.ceil(game.world.height/groupHeight);
       for(var i=0; i<groupCount; i++){
@@ -154,9 +162,9 @@ function create() {
         group.enableBody = true;
         group.X = i*groupHeight;
         group.H = groupHeight;
-        console.log('added group at'+group.X+'with height'+group.H);
         entA.push(group);
       }
+      // simple function to insert entities
       createEntity = function(x,y,name,frame, scale, jumping){
           scale = scale || 0.3;
           jumping = jumping || true
@@ -169,6 +177,52 @@ function create() {
           }
           return so;
       }
+      // create Level
+      // page1 hello
+      addText(280, 80, '`hurry up`\nyou need to dev for the\n`#meatlyjam`', { fontSize: '64px', fill: '#000'}, 30, gBg);
+      addText(800-32, 600, 'come over here', { fontSize: '32px', fill: '#000'}, -90, gBg);
+      game.add.sprite(0,0,'meatly',62,gBg).scale.setTo(0.5,0.5);
+      // page2 introduce food
+      addText(928, 400, 'you must be `starving`\nhave some `food`', { fontSize: '64px', fill: '#000'}, 0, gBg);
+      addText(1500, 550, '`hurry up` or you\'ll get hungry again', { fontSize: '20px', fill: '#000'}, -45, gBg);
+      createEntity(1450,500, FOOD, 57, 0.1)
+      createEntity(1500,450, FOOD, 57, 0.1)
+      createEntity(1550,400, FOOD, 57, 0.1)
+      // page 3 introduce playing nintendo 
+      addText(1728, 400, '`motivation` makes you `work` efficiently', { fontSize: '64px', fill: '#000'}, 0, gBg);
+      addText(2700, 100, 'good thing is:\nplaying `nintendo` `motivates` you', { fontSize: '32px', fill: '#000'}, 0, gBg);
+      addText(3100, 600, 'passing `time` does so, `too`', { fontSize: '20px', fill: '#000'}, -90, gBg);
+      createEntity(2700,300, NINTENDO, 58, 0.2)
+      createEntity(2800,300, NINTENDO, 58, 0.2)
+      createEntity(2900,300, NINTENDO, 58, 0.2)
+      createEntity(3000,300, NINTENDO, 58, 0.2)
+      // page 4 HUD 3400
+      hud_position = new Phaser.Point(3300+900,50);
+      addText(3400, 300, 'oh, almost forgot about it\n`measures` your motivation and hunger\n', { fontSize: '64px', fill: '#000'}, 0, gBg);
+      addText(4200, 200, 'aaaaand the `time` of course\n', { fontSize: '64px', fill: '#000'}, 0, gBg);
+      addText(4530, 180, 'that\'s why they attached it to your glasses\n', { fontSize: '20px', fill: '#000'}, 0, gBg);
+      addText(4750, 270, 'until the `boss` comes over', { fontSize: '64px', fill: '#000'}, 0, gBg);
+      addText(4900, 340, 'not sure if he really looks like that\n            but his personality does', { fontSize: '18px', fill: '#000'}, 0, gBg);
+      addText(5400, 600, '`hurry up` he\'s getting `closer` already', { fontSize: '32px', fill: '#000'}, -90, gBg);
+      game.add.sprite(0,0,'meatly',62,gBg).scale.setTo(0.5,0.5);
+      addText(5600, 300, '`don\'t` ask `me` why they used a `torch` to indicate the project\'s `progress`', { fontSize: '48px', fill: '#000'}, 0, gBg);
+      addText(6600, 380, 'probably didn\'t have anything better`...`', { fontSize: '48px', fill: '#000'}, 0, gBg);
+      // page 5 gather ideas 7400
+      addText(7400, 300, '`just coding` does `not`\n'+
+                         'improve your project `much`. we need good `ideas`', { fontSize: '64px', fill: '#000'}, 0, gBg);
+      addText(7400+14*64, 300+54, '`great', { fontSize: '72px', fill: '#000'}, 30, gBg);
+      addText(8600, 600, 'catch some `idea fairies`', { fontSize: '32px', fill: '#000'}, -90, gBg);
+      createEntity(8400+910,150, IDEAFAIRY, 52, 0.1 ).velocity.x= -170;
+      createEntity(8400+950,200, IDEAFAIRY, 52, 0.13).velocity.x= -200;
+      createEntity(8400+800,430, IDEAFAIRY, 52, 0.15).velocity.x= -250;
+      createEntity(8400+930,390, IDEAFAIRY, 52, 0.12).velocity.x= -200;
+      
+      
+      /*
+      // create level-texts    
+      addText(32, 128, '`HEY!` welcome,\nOh, you look like you\'re `starving`!\nHave some `FOOD` and then `GO!`', { fontSize: '64px', fill: '#000'}, -0.1, gBg);
+      
+      addText(750, 280, 'Devving a game requires `motivation`\nGo ahead and `Play` some\ncool games on the `nintendo`s lying around.', { fontSize: '48px', fill: '#000'},0,gBg);
       // food items
       for (var i = 0; i < 4; i++)
       {
@@ -184,7 +238,7 @@ function create() {
       for (var i = 0; i < 4; i++)
       {
           var so = createEntity(1600+i*140,200+i%2*30, IDEAFAIRY, 52, 0.1);
-          so.velocity.x = 0;
+          so.velocity.x = -170;
       }
       // create downFishs
       for (var i = 0; i < 4; i++)
@@ -197,16 +251,10 @@ function create() {
       {
           var so = createEntity(1800,100+i*400, WORKSTATION, 48, 0.5, false);
       }
+      */
     }
-    // configure sounds
-    sndStep        = game.add.audio('step_concrete');    sndStep        .volume = 4;
-    sndEat         = game.add.audio('consume_food');     sndEat         .volume = 1;
-    sndPlayNintendo= game.add.audio('consume_nintendo'); sndPlayNintendo.volume = 4;
-    sndIdeaFairy   = game.add.audio('idea_fairy');       sndIdeaFairy   .volume = 1;
-    sndDownFish    = game.add.audio('down_fish');        sndDownFish    .volume = 0.8;
-    sndWorkstation = game.add.audio('key_strokes');      sndWorkstation .volume = 4;
                                                          
-    // setup hud
+    // setup hud, should be done last
     {
       hud = game.add.sprite(256,256,'meatly', 56);
       hud.pivot.setTo(hud.width/2,hud.height/2);
@@ -251,9 +299,25 @@ function create() {
       hud.addChild(hud.boss);
       hud.scale.setTo(0.5,0.5);
       hud.angle = 2;
-      hud.position.setTo(120,120);
-      hud.fixedToCamera = true;
+      hud.position = hud_position||new Phaser.Point(120,120);
+      //hud.fixedToCamera = true;
       hud.tween = function(){game.add.tween(hud.scale).to( {x: 0.6, y: 0.6 }, 200, Phaser.Easing.Quadratic.InOut, true, 0, 0, true);}; // for notification purpose
+      hud.visible = true;
+      hud.alpha = 0; /// invisible, shall be tweened
+      
+      
+      game.physics.arcade.enable(hud);
+      hud.checkWorldBounds = true;
+      hud.events.onEnterBounds.add(
+        function(h){
+          h.position.setTo(120,120);
+          h.fixedToCamera = true;
+          h.tween();
+          game.add.tween(hud).to( {alpha: 1 }, 200, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
+          sndIdeaFairy.play();
+          projectTimeStart = game.time.time;
+        }
+      );
     }
     // input method
     cursors = game.input.keyboard.createCursorKeys();
@@ -329,7 +393,6 @@ function render(){
 }
 // collision callback
 function collideEntities (player, ent) {
-  console.log('collision with '+ent.name);
   if(ent.name & (DOWNFISH | IDEAFAIRY | FOOD | NINTENDO | WORKSTATION)){
     // Removes the food from the screen
     ent.kill();
@@ -487,10 +550,9 @@ function createShadowedObject(x, y, group, spritesheet, frame, compositScale, sh
     composit.events.onEnterBounds.add(
       function(ent){
         ent.body.velocity = ent.velocity; 
-        console.log('starting:'+ent.name);
         ent.events.onOutOfBounds.add(
           function(ent2){
-            console.log('leaving:'+ent2.name);ent2.destroy();
+            ent2.destroy();
           }
         );
       }
@@ -499,12 +561,15 @@ function createShadowedObject(x, y, group, spritesheet, frame, compositScale, sh
     return composit;
 }
 //insert text with our font
-function addText(x,y, string, style, rotation){ 
-  rotation = rotation || 0; // default value
-  var text = game.add.text(x, y, string, style);
+function addText(x,y, string, style, angle, group){ 
+  // default values
+  group = group || game.world;
+  angle = angle || 0; 
+  // add text
+  var text = game.add.text(x, y, string, style, group);
   text.font = 'Londrina Solid';
   colorText(text);
-  text.rotation=rotation;
+  text.angle=angle;
   updateFontOfTheseTexts.push(text);
   return text;
 }

@@ -40,3 +40,4 @@ submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.co
 - 14:21 adapted sound-volumes. and player got also destroyed, fixed that
 # [credits](credits.md)
 - 14:57 WUHU **Z-ORDER** WORKS!!! :banana: !!! YEAH!
+- 15:50 The first parts of the introduction level are done :)
