@@ -49,12 +49,14 @@ var gBg; // background group
 // guys standing around blocking you ... whut!
 // that devil thing
 
+const ENTITYTYPES = 5;
 const DOWNFISH   =  1;
 const IDEAFAIRY  =  2;
 const WORKSTATION=  4;
 const FOOD       =  8;
 const NINTENDO   = 16;
-const DUDE       = 32;
+//const DUDE       = 32;
+const imgId = [50, 52, 49, 57, 58]
 
 const INCREASE_RATE_HUNGER = 5 // per second
 const INCREASE_RATE_MOTIVATION= 5 // per second
@@ -79,6 +81,8 @@ var sndWorkstation;
 var updateFontOfTheseTexts = [];
 // interface
 var hud;
+
+var spawning = false;
 
 //  The Google WebFont Loader will look for this object, so create it before loading the script.
 WebFontConfig = {
@@ -139,8 +143,8 @@ function create() {
 
     // create player
     {
-      player = createShadowedObject(0, game.world.height - 64, undefined, 'meatly', 21, 0.3, 0.3);
-      player.body.collideWorldBounds = true; // todo turn on again!
+      player = createShadowedObject(11000, game.world.height - 64, undefined, 'meatly', 21, 0.3, 0.3);
+      //player.body.collideWorldBounds = true; // todo turn on again!
       player.checkWorldBounds = false; // or it will get destroyed :(
       // add animations to it
       var anims = [];
@@ -214,50 +218,13 @@ function create() {
       addText(8600, 600, 'catch the `idea fairy`', { fontSize: '32px', fill: '#000'}, -90, gBg);
       createEntity(8400+910,150, IDEAFAIRY, 52, 0.1 ).velocity.x= -170;
       addText(9000, 200, 'now `implement` it!', { fontSize: '72px', fill: '#000'}, 0, gBg);
-      createEntity(9550,400, WORKSTATION, 49, 0.5, false).events.onKilled.add(function(){projectTimeStart=game.time.time;}); // reset timer on collision
+      createEntity(9550,400, WORKSTATION, 49, 0.5, false).events.onKilled.add(function(){projectTimeStart=game.time.time; spawning=true;}); // reset timer on collision, activate spawning
       addText(9550, 500, 'And the race `begins`', { fontSize: '80px', fill: '#000'}, 0, gBg);
       addText(10500, 200, '`hurry up`!', { fontSize: '100px', fill: '#000'}, 0, gBg);
       addText(10500, 300, 'developed by `nitzel`', { fontSize: '32px', fill: '#000'}, 0, gBg);
       addText(10500, 350, 'for', { fontSize: '50px', fill: '#000'}, 0, gBg);
       addText(10500, 450, '`meatly`jam', { fontSize: '72px', fill: '#000'}, -10, gBg);
       
-      
-      
-      
-      /*
-      // create level-texts    
-      addText(32, 128, '`HEY!` welcome,\nOh, you look like you\'re `starving`!\nHave some `FOOD` and then `GO!`', { fontSize: '64px', fill: '#000'}, -0.1, gBg);
-      
-      addText(750, 280, 'Devving a game requires `motivation`\nGo ahead and `Play` some\ncool games on the `nintendo`s lying around.', { fontSize: '48px', fill: '#000'},0,gBg);
-      // food items
-      for (var i = 0; i < 4; i++)
-      {
-          createEntity(100+i*140,550-i*10, FOOD, 57);   
-      }
-      // nintendos
-      createEntity(1200,350, NINTENDO, 58);  
-      createEntity(1300,500, NINTENDO, 58);  
-      createEntity(1450,400, NINTENDO, 58);  
-      createEntity(1550,350, NINTENDO, 58);  
-      
-      // create ideaFaries
-      for (var i = 0; i < 4; i++)
-      {
-          var so = createEntity(1600+i*140,200+i%2*30, IDEAFAIRY, 52, 0.1);
-          so.velocity.x = -170;
-      }
-      // create downFishs
-      for (var i = 0; i < 4; i++)
-      {
-          var so = createEntity(1600,100+i*100, DOWNFISH, 50, 0.5);
-          so.velocity.x = -70;
-      }
-      // create workStations
-      for (var i = 0; i < 2; i++)
-      {
-          var so = createEntity(1800,100+i*400, WORKSTATION, 49, 0.5, false);
-      }
-      */
     }
                                                          
     // setup hud, should be done last
@@ -335,7 +302,27 @@ function create() {
 }
 
 playerOldPosition = new Phaser.Point(0,0);
+var posLastSpawn = 0;
+const SPAWN_DIST = 100; // pixel
 function update() {
+  // spawn new stuff
+  if(spawning){
+    const pos = player.body.position;
+    if(pos.x > posLastSpawn + SPAWN_DIST){
+      //if game.rnd.integerInRange()
+      {
+        var etyId = game.rnd.integerInRange(0,imgId.length);
+        var etyType = Math.pow(2, etyId);
+        var scale = game.rnd.integerInRange(1, 5)/10.0;
+        ent = createEntity(pos.x+game.rnd.integerInRange(900,1100), game.rnd.integerInRange(0, game.world.height), etyType, imgId[etyId], scale, etyType!=WORKSTATION);
+        if(etyType & (IDEAFAIRY | DOWNFISH)){
+          ent.velocity.x = game.rnd.integerInRange(-400,-50);
+        }
+        console.log(etyId);
+      }
+      posLastSpawn = pos.x;
+    }
+  }
   // update motivation and hunger
   game.time
   hunger += INCREASE_RATE_HUNGER*game.time.elapsed/1000;
