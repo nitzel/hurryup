@@ -29,7 +29,9 @@ submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.co
 - 23:47 not productive ... failed at loading screen xD
 - 00:01 gotta get some sleep. tomorrow there are still around 10hrs to do it!
 - 08:30 good morning, we had a time-zone-change (in the old time-zone it's 7:30, I did NOT sleep longer)so I can work 11h30m till **6pm**. GO!
-
+- 09:02 workstation added
+- 09:02 workstations increment project progress and drain ideas/food/motivation (depending on how much you have)
+- 11:17 fiddled around too long with the HUD, looks like time is running out. 7 hours left. **Shuuuu**
 
 
 # [credits](credits.md)
