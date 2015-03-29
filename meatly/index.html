@@ -55,6 +55,9 @@ const FOOD       =8;
 const NINTENDO   =16;
 const DUDE       =32;
 
+const INCREASE_RATE_HUNGER = 5 // per second
+const INCREASE_RATE_MOTIVATION= 5 // per second
+
 var cursors;
 // status
 var motivation = 0;
@@ -72,11 +75,7 @@ var sndIdeaFairy;
 var sndDownFish;
 var sndWorkstation;
 // texts
-var textMotivation;
-var textHunger;
-var textProgress;
-var textBG0;
-var textBG1;
+var updateFontOfTheseTexts = [];
 // interface
 var hud;
 
@@ -87,7 +86,7 @@ WebFontConfig = {
     //  For some reason if we don't the browser cannot render the text the first time it's created.
     active: function() { 
       game.time.events.add(Phaser.Timer.SECOND, function(){
-        [textMotivation, textHunger, textProgress, textBG0,textBG1].forEach(function(t){
+        updateFontOfTheseTexts.forEach(function(t){
           if(t)t.font = 'Londrina Solid';
         });
       }, this);},
@@ -121,19 +120,17 @@ function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
     
     // set resume-callback to correct timer
-    game.onResume.add(function(){projectTimeStart+=game.time.pauseDuration;console.log(game.time.pauseDuration+'\n')});
+    game.onResume.add(function(){projectTimeStart+=game.time.pauseDuration;});
     
     
     //  A simple background for our game
     var bg = game.add.sprite(0, 0, 'sky');
     bg.fixedToCamera = true;
     // create level-texts    
-    textBG0 = game.add.text(32, 128, '`HEY!` welcome,\nOh, you look like you\'re `starving`!\nHave some `FOOD` and then `GO!`', { fontSize: '64px', fill: '#000'});
-    colorText(textBG0);
-    textBG0.rotation=-0.1;
     
-    textBG1 = game.add.text(750, 280, 'Devving a game requires `motivation`\nGo ahead and `Play` some\ncool games on the `nintendo`s lying around.', { fontSize: '48px', fill: '#000'});
-    colorText(textBG1);
+    addText(32, 128, '`HEY!` welcome,\nOh, you look like you\'re `starving`!\nHave some `FOOD` and then `GO!`', { fontSize: '64px', fill: '#000'}, -0.1);
+    
+    addText(750, 280, 'Devving a game requires `motivation`\nGo ahead and `Play` some\ncool games on the `nintendo`s lying around.', { fontSize: '48px', fill: '#000'});
     // create player
     {
       player = createShadowedObject(0, game.world.height - 64, undefined, 'meatly', 21, 0.3, 0.3);
@@ -258,10 +255,112 @@ function create() {
     projectTimeStart = game.time.time;
 }
 
-function getMotivationFrame(){
-  //     :-|          :)                 :(
-  return 17 + (motivation>=75?2:0) + (motivation<=25?4:0);
+function update() {
+  // update motivation and hunger
+  game.time
+  hunger += INCREASE_RATE_HUNGER*game.time.elapsed/1000;
+  motivation += INCREASE_RATE_MOTIVATION*game.time.elapsed/1000;
+  
+
+  game.physics.arcade.overlap(player, entities, collideEntities, null, this);
+      //  Reset the players velocity (movement)
+  player.body.velocity.x = 0;
+  player.body.velocity.y = 0;
+  
+  var up    = cursors.up.isDown   ;
+  var down  = cursors.down.isDown ;
+  var left  = cursors.left.isDown ;
+  var right = cursors.right.isDown;
+  
+  if(left || up || down || right) { // moving
+    if(left)
+      player.body.velocity.x = -1;
+    else if(right)
+      player.body.velocity.x =  1;
+    if(up)
+      player.body.velocity.y = -1;
+    else if(down)
+      player.body.velocity.y =  1;
+    player.body.velocity.normalize().multiply(600,600); // speed of 400 in every direction
+  }
+  
+  if (left)
+  {
+    player.obj.animations.play('left');
+  }
+  else if (right || up || down)
+  {
+      player.obj.animations.play('right');
+  }
+  else
+  {
+      //  Stand still
+      player.obj.animations.stop();
+      // give it a smile or not
+      player.obj.frame = getMotivationFrame();
+  }
+  
+  updateHud();
+  
+  game.world.setBounds(
+    Math.max(game.camera.x-300, game.world.bounds.x),0,1500,600);
+  checkMotivationAndHunger();
 }
+// called for postrendering, eg for debugging body-boxes
+function render(){
+    //game.debug.body(player);
+    entities.forEach(function(ent){
+      //game.debug.body(ent);
+    });
+}
+// collision callback
+function collideEntities (player, ent) {
+  if(ent.name & (DOWNFISH | IDEAFAIRY | FOOD | NINTENDO | WORKSTATION)){
+    // Removes the food from the screen
+    ent.kill();
+  }
+  switch(ent.name){
+  case FOOD:
+    hunger -= 30;
+    sndEat.play();
+  break;
+  case DOWNFISH: // todo?
+    motivation-=50;
+    sndDownFish.play();
+  break
+  case IDEAFAIRY: // todo?
+    ideaCount++;
+    sndIdeaFairy.play();
+  break
+  case NINTENDO: // todo
+    motivation+=15;
+    sndPlayNintendo.play();
+  break
+  case WORKSTATION: // todo
+    if(ideaCount>0){
+      projectProgress += 5;
+      ideaCount--;
+    }
+    if(motivation>0){
+      projectProgress += 5*motivation/100.0;
+      motivation -= Math.min(motivation, (10+hunger)/2);
+      hunger += Math.min(hunger, 5);
+    } else {
+      
+    }
+    sndWorkstation.play();
+  break
+  }
+  
+  checkMotivationAndHunger();
+}
+// callback for player-animation. so that we know when to make step-noises
+function animPlayer(sprite, animation) {
+  if([0,4,11,15,17,19,21].indexOf(animation.index) != -1) { // frame in array
+    sndStep.play(); // play footstepsound when foot hits the ground
+  }
+}
+// update player hud
 function updateHud(){
   // MOTIVATION
   var newMotivationFrame = getMotivationFrame();
@@ -294,110 +393,7 @@ function updateHud(){
   if(!game.tweens.isTweening(hud.boss.position))
     game.add.tween(hud.boss.position).to( {x: Math.max(80, 512-80-(game.time.elapsedSecondsSince(projectTimeStart))*(512-2*80.0)/PROJECT_TIME)}, 200, Phaser.Easing.Quadratic.InOut, true, 0, 0, false)
 }
-
-function update() {
-    game.physics.arcade.overlap(player, entities, collideEntities, null, this);
-        //  Reset the players velocity (movement)
-    player.body.velocity.x = 0;
-    player.body.velocity.y = 0;
-    
-    var up    = cursors.up.isDown   ;
-    var down  = cursors.down.isDown ;
-    var left  = cursors.left.isDown ;
-    var right = cursors.right.isDown;
-    
-    if(left || up || down || right) { // moving
-      if(left)
-        player.body.velocity.x = -1;
-      else if(right)
-        player.body.velocity.x =  1;
-      if(up)
-        player.body.velocity.y = -1;
-      else if(down)
-        player.body.velocity.y =  1;
-      player.body.velocity.normalize().multiply(600,600); // speed of 400 in every direction
-    }
-    
-    if (left)
-    {
-      player.obj.animations.play('left');
-    }
-    else if (right || up || down)
-    {
-        player.obj.animations.play('right');
-    }
-    else
-    {
-        //  Stand still
-        player.obj.animations.stop();
-        // give it a smile or not
-        player.obj.frame = getMotivationFrame();
-    }
-    
-    updateHud();
-    
-    game.world.setBounds(
-      Math.max(game.camera.x-300, game.world.bounds.x),0,1500,600);
-    
-}
-
-function collideEntities (player, ent) {
-    if(ent.name & (DOWNFISH | IDEAFAIRY | FOOD | NINTENDO | WORKSTATION)){
-      // Removes the food from the screen
-      ent.kill();
-    }
-    switch(ent.name){
-    case FOOD:
-      hunger -= 30;
-      sndEat.play();
-    break;
-    case DOWNFISH: // todo?
-      motivation-=50;
-      sndDownFish.play();
-    break
-    case IDEAFAIRY: // todo?
-      ideaCount++;
-      sndIdeaFairy.play();
-    break
-    case NINTENDO: // todo
-      motivation+=15;
-      sndPlayNintendo.play();
-    break
-    case WORKSTATION: // todo
-      if(ideaCount>0){
-        projectProgress += 5;
-        ideaCount--;
-      }
-      if(motivation>0){
-        projectProgress += 5*motivation/100.0;
-        motivation -= Math.min(motivation, (10+hunger)/2);
-        hunger += Math.min(hunger, 5);
-      } else {
-        
-      }
-      sndWorkstation.play();
-    break
-    }
-    // keep values in range
-    motivation = Math.max(0,motivation);
-    motivation = Math.min(100,motivation);
-    hunger = Math.max(0,hunger);
-    hunger = Math.min(100,hunger);
-}
-
-function animPlayer(sprite, animation) {
-  if([0,4,11,15,17,19,21].indexOf(animation.index) != -1) { // frame in array
-    sndStep.play(); // play footstepsound when foot hits the ground
-  }
-}
-
-function render(){
-    //game.debug.body(player);
-    entities.forEach(function(ent){
-      //game.debug.body(ent);
-    });
-}
-
+// color text to mealty-color whenever sth is embraced in `this`
 function colorText(phaserTextObj){
   var text = phaserTextObj.text; // deepcopy :(
   var C = false;
@@ -413,7 +409,7 @@ function colorText(phaserTextObj){
   }
   phaserTextObj.text = text; // because of deepcopy we have to overwrite it again
 }
-
+// create scaled object with shadow below
 function createShadowedObject(x, y, group, spritesheet, frame, compositScale, shadowScale, objScale, shadowColor){
     // default params
     x = x||0;
@@ -472,6 +468,26 @@ function createShadowedObject(x, y, group, spritesheet, frame, compositScale, sh
     composit.scale.setTo(compositScale,compositScale);
     // return it
     return composit;
+}
+//insert text with our font
+function addText(x,y, string, style, rotation){ 
+  rotation = rotation || 0; // default value
+  var text = game.add.text(x, y, string, style);
+  text.font = 'Londrina Solid';
+  colorText(text);
+  text.rotation=rotation;
+  updateFontOfTheseTexts.push(text);
+  return text;
+}
+// depending on motivation, choose the frame to display
+function getMotivationFrame(){
+  //     :-|          :)                 :(
+  return 17 + (motivation>=75?2:0) + (motivation<=25?4:0);
+}
+// keep values in range
+function checkMotivationAndHunger(){
+  motivation = Math.min(100, Math.max(0,motivation));
+  hunger = Math.min(100, Math.max(0,hunger));
 }
 </script>
 
