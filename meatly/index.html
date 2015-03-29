@@ -311,10 +311,10 @@ function update() {
     if(pos.x > posLastSpawn + SPAWN_DIST){
       //if game.rnd.integerInRange()
       {
-        var etyId = game.rnd.integerInRange(0,imgId.length);
+        var etyId = game.rnd.integerInRange(0,imgId.length-1);
         var etyType = Math.pow(2, etyId);
         var scale = game.rnd.integerInRange(1, 5)/10.0;
-        ent = createEntity(pos.x+game.rnd.integerInRange(900,1100), game.rnd.integerInRange(0, game.world.height), etyType, imgId[etyId], scale, etyType!=WORKSTATION);
+        ent = createEntity(pos.x+game.rnd.integerInRange(1200,1500), game.rnd.integerInRange(0, game.world.height), etyType, imgId[etyId], scale, etyType!=WORKSTATION);
         if(etyType & (IDEAFAIRY | DOWNFISH)){
           ent.velocity.x = game.rnd.integerInRange(-400,-50);
         }
