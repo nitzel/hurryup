@@ -39,3 +39,4 @@ submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.co
 - 13:53 entities start moving as soon as they enter "world" which is close to view. they get destroyed when they leave it again.
 - 14:21 adapted sound-volumes. and player got also destroyed, fixed that
 # [credits](credits.md)
+- 14:57 WUHU **Z-ORDER** WORKS!!! :banana: !!! YEAH!

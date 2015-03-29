@@ -44,16 +44,16 @@ game.state.start('stateLoad');*/
 // entities
 var player;
 // groups
-var entities;
+var entA = []; // array to sort entities depending on y-value (which is like z)
 // guys standing around blocking you ... whut!
 // that devil thing
 
-const DOWNFISH   =1;
-const IDEAFAIRY  =2;
-const WORKSTATION=4;
-const FOOD       =8;
-const NINTENDO   =16;
-const DUDE       =32;
+const DOWNFISH   =  1;
+const IDEAFAIRY  =  2;
+const WORKSTATION=  4;
+const FOOD       =  8;
+const NINTENDO   = 16;
+const DUDE       = 32;
 
 const INCREASE_RATE_HUNGER = 5 // per second
 const INCREASE_RATE_MOTIVATION= 5 // per second
@@ -137,7 +137,7 @@ function create() {
       player.body.collideWorldBounds = true;
       player.checkWorldBounds = false; // or it will get destroyed :(
       // add animations to it
-      anims = [];
+      var anims = [];
       anims.push(player.obj.animations.add('left', [3, 4, 5, 6, 7, 0, 1, 2], 10, true));
       anims.push(player.obj.animations.add('right', [12, 11, 10, 9, 8, 15, 14, 13, ], 10, true));
       anims.forEach(function(anim){
@@ -147,13 +147,21 @@ function create() {
     }
     // create entities
     {
-      entities = game.add.group();
-      entities.enableBody = true;
-      
+      var groupHeight = 23;//Math.floor(player.body.height);
+      var groupCount = Math.ceil(game.world.height/groupHeight);
+      for(var i=0; i<groupCount; i++){
+        var group = game.add.group();
+        group.enableBody = true;
+        group.X = i*groupHeight;
+        group.H = groupHeight;
+        console.log('added group at'+group.X+'with height'+group.H);
+        entA.push(group);
+      }
       createEntity = function(x,y,name,frame, scale, jumping){
           scale = scale || 0.3;
           jumping = jumping || true
-          var so = createShadowedObject(x,y, entities, 'meatly', frame, scale, 0.8);
+          var group = entA[Math.floor(y/groupHeight)];
+          var so = createShadowedObject(x,y, group, 'meatly', frame, scale, 0.8);
           so.name = name;
           if(jumping){
             game.add.tween(so.obj.position).to( { y: -300 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);
@@ -176,7 +184,7 @@ function create() {
       for (var i = 0; i < 4; i++)
       {
           var so = createEntity(1600+i*140,200+i%2*30, IDEAFAIRY, 52, 0.1);
-          so.velocity.x = -170;
+          so.velocity.x = 0;
       }
       // create downFishs
       for (var i = 0; i < 4; i++)
@@ -256,14 +264,16 @@ function create() {
     projectTimeStart = game.time.time;
 }
 
+playerOldPosition = new Phaser.Point(0,0);
 function update() {
   // update motivation and hunger
   game.time
   hunger += INCREASE_RATE_HUNGER*game.time.elapsed/1000;
   motivation += INCREASE_RATE_MOTIVATION*game.time.elapsed/1000;
   
-
-  game.physics.arcade.overlap(player, entities, collideEntities, null, this);
+  entA.forEach(function(ents){
+    game.physics.arcade.overlap(player, ents, collideEntities, null, this);
+  });
       //  Reset the players velocity (movement)
   player.body.velocity.x = 0;
   player.body.velocity.y = 0;
@@ -300,6 +310,9 @@ function update() {
       // give it a smile or not
       player.obj.frame = getMotivationFrame();
   }
+  // todo if(player.body.x
+  entA.forEach(function(ents){ents.removeChild(player);});
+  entA[Math.floor(player.body.y/player.body.height)].addChild(player);
   
   updateHud();
     
@@ -310,12 +323,13 @@ function update() {
 // called for postrendering, eg for debugging body-boxes
 function render(){
     //game.debug.body(player);
-    entities.forEach(function(ent){
+    //entities.forEach(function(ent){
       //game.debug.body(ent);
-    });
+    //});
 }
 // collision callback
 function collideEntities (player, ent) {
+  console.log('collision with '+ent.name);
   if(ent.name & (DOWNFISH | IDEAFAIRY | FOOD | NINTENDO | WORKSTATION)){
     // Removes the food from the screen
     ent.kill();
@@ -504,7 +518,7 @@ function checkMotivationAndHunger(){
   motivation = Math.min(100, Math.max(0,motivation));
   hunger = Math.min(100, Math.max(0,hunger));
 }
-//entities.forEach(function(a){a.events.onEnterBounds.add(function(x){console.log(x.toString())})})
+
 </script>
 
 </body>
