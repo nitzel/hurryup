@@ -5,6 +5,7 @@
 - submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.com "tada")
 - my first gamejam!
 - I have never done anything with `phaser.js` before. So all the knowledge had to be earned within these 48 hours
+
 # timeline (GMT+1)
 - 16:00 uff, exam is over! Lets get home.
 - 17:00 meatlyjam starts! My first gamejam!!! Wuhu :banana:
