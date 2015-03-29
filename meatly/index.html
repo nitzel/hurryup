@@ -114,7 +114,7 @@ function preload() {
 }
 
 function create() {
-    game.world.setBounds(0,0,1600,600);
+    game.world.setBounds(0,0,1200,600);
 
     // physics is just collision and movement
     game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -175,13 +175,13 @@ function create() {
       for (var i = 0; i < 4; i++)
       {
           var so = createEntity(1600+i*140,200+i%2*30, IDEAFAIRY, 52, 0.1);
-          so.body.velocity.x = -170;
+          so.velocity.x = -170;
       }
       // create downFishs
       for (var i = 0; i < 4; i++)
       {
           var so = createEntity(1600,100+i*100, DOWNFISH, 50, 0.5);
-          so.body.velocity.x = -70;
+          so.velocity.x = -70;
       }
       // create workStations
       for (var i = 0; i < 2; i++)
@@ -301,9 +301,9 @@ function update() {
   }
   
   updateHud();
-  
+    
   game.world.setBounds(
-    Math.max(game.camera.x-300, game.world.bounds.x),0,1500,600);
+    Math.max(game.camera.x-300, game.world.bounds.x),0,game.world.bounds.width,game.world.bounds.height);
   checkMotivationAndHunger();
 }
 // called for postrendering, eg for debugging body-boxes
@@ -447,6 +447,7 @@ function createShadowedObject(x, y, group, spritesheet, frame, compositScale, sh
       composit = group.create(x, y, null);
     
     composit.body.setSize(512,256,0,0);
+    composit.checkWorldBounds = true;
     composit.pivot.position = composit.body.center;
     composit.scale.setTo(shadowScale,shadowScale);
     const RW = 256*shadowScale; // radius horizontal
@@ -466,6 +467,19 @@ function createShadowedObject(x, y, group, spritesheet, frame, compositScale, sh
     composit.addChild(obj);
     composit.obj = obj;
     composit.scale.setTo(compositScale,compositScale);
+    
+    composit.velocity = new Phaser.Point(0, 0);
+    composit.events.onEnterBounds.add(
+      function(ent){
+        ent.body.velocity = ent.velocity; 
+        console.log('starting:'+ent.name);
+        ent.events.onOutOfBounds.add(
+          function(ent2){
+            console.log('leaving:'+ent2.name);ent2.destroy();
+          }
+        );
+      }
+    );
     // return it
     return composit;
 }
@@ -489,6 +503,7 @@ function checkMotivationAndHunger(){
   motivation = Math.min(100, Math.max(0,motivation));
   hunger = Math.min(100, Math.max(0,hunger));
 }
+//entities.forEach(function(a){a.events.onEnterBounds.add(function(x){console.log(x.toString())})})
 </script>
 
 </body>
