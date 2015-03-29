@@ -28,4 +28,8 @@ submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.co
 - 22:29 looked for some music, didnt find any. Added some sounds and the downfish. Entities are now grouped, maybe I can do sth about the visibility/zorder
 - 23:47 not productive ... failed at loading screen xD
 - 00:01 gotta get some sleep. tomorrow there are still around 10hrs to do it!
+- 08:30 good morning, we had a time-zone-change (in the old time-zone it's 7:30, I did NOT sleep longer)so I can work 11h30m till **6pm**. GO!
+
+
+
 # [credits](credits.md)

@@ -10,6 +10,7 @@ You can find the Creative Commons Licens here: [CC3](http://creativecommons.org/
   - `consume_nintendo.wav` by [nicolasdrweski](https://www.freesound.org/people/nicolasdrweski/sounds/248050/) under CC3
   - `down.wav` by [themusicalnomad](https://www.freesound.org/people/themusicalnomad/sounds/253886/) under CC0
   - `idea.wav` by [airblock](https://www.freesound.org/people/airblock/sounds/268204/) under CC0
+  - `keystrokes.wav` by [dmadridp](https://www.freesound.org/people/dmadridp/sounds/233476/) under CC3
   
   
   
