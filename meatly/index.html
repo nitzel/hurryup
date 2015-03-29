@@ -57,8 +57,8 @@ const DUDE       =32;
 
 var cursors;
 // status
-var motivation = 00;
-var hunger = 0;
+var motivation = 0;
+var hunger = 3;
 var ideaCount = 0;
 var projectProgress = 0;
 
@@ -68,6 +68,7 @@ var sndEat;
 var sndPlayNintendo;
 var sndIdeaFairy;
 var sndDownFish;
+var sndWorkstation;
 // texts
 var textMotivation;
 var textHunger;
@@ -105,6 +106,7 @@ function preload() {
     game.load.audio('consume_nintendo', 'snd/consume_nintendo.wav');
     game.load.audio('down_fish', 'snd/down.wav');
     game.load.audio('idea_fairy', 'snd/idea.wav');
+    game.load.audio('key_strokes', 'snd/keystrokes.wav');
 }
 
 function create() {
@@ -142,12 +144,15 @@ function create() {
       entities = game.add.group();
       entities.enableBody = true;
       
-      createEntity = function(x,y,name,frame, scale){
+      createEntity = function(x,y,name,frame, scale, jumping){
           scale = scale || 0.3;
+          jumping = jumping || true
           var so = createShadowedObject(x,y, entities, 'meatly', frame, scale, 0.8);
           so.name = name;
-          game.add.tween(so.obj.position).to( { y: -300 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);
-          game.add.tween(so.shadow.scale).to( { y: 0.9, x:0.9 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);  
+          if(jumping){
+            game.add.tween(so.obj.position).to( { y: -300 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);
+            game.add.tween(so.shadow.scale).to( { y: 0.9, x:0.9 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);  
+          }
           return so;
       }
       // food items
@@ -173,6 +178,11 @@ function create() {
           var so = createEntity(1600,100+i*100, DOWNFISH, 50, 0.5);
           so.body.velocity.x = -70;
       }
+      // create workStations
+      for (var i = 0; i < 2; i++)
+      {
+          var so = createEntity(1800,100+i*400, WORKSTATION, 48, 0.5, false);
+      }
     }
     // sounds
     sndStep = game.add.audio('step_concrete');
@@ -180,6 +190,7 @@ function create() {
     sndPlayNintendo  = game.add.audio('consume_nintendo');
     sndIdeaFairy = game.add.audio('idea_fairy');
     sndDownFish  = game.add.audio('down_fish');
+    sndWorkstation  = game.add.audio('key_strokes');
     
     //  The score, will be in front of everything
     textHunger = game.add.text(16, 16, 'hunger: `0', { fontSize: '32px', fill: '#000'/*'#B03A00'*/ });
@@ -201,9 +212,9 @@ function update() {
     player.body.velocity.x = 0;
     player.body.velocity.y = 0;
     
-    var up    = cursors.up.isDown;
-    var down  = cursors.down.isDown;
-    var left  = cursors.left.isDown;
+    var up    = cursors.up.isDown   ;
+    var down  = cursors.down.isDown ;
+    var left  = cursors.left.isDown ;
     var right = cursors.right.isDown;
     
     if(left || up || down || right) { // moving
@@ -239,18 +250,12 @@ function update() {
           player.obj.frame = 21
     }
     
-    //  Allow the player to jump if they are touching the ground.
-    /*if (cursors.up.isDown && player.body.touching.none)
-    {
-        player.body.velocity.y = -350;
-    } */
-    
     game.world.setBounds(
       Math.max(game.camera.x-300, game.world.bounds.x),0,1500,600);
 }
 
 function collideEntities (player, ent) {
-    if(ent.name & (DOWNFISH | IDEAFAIRY | FOOD | NINTENDO)){
+    if(ent.name & (DOWNFISH | IDEAFAIRY | FOOD | NINTENDO | WORKSTATION)){
       // Removes the food from the screen
       ent.kill();
     }
@@ -260,18 +265,21 @@ function collideEntities (player, ent) {
       textHunger.text = 'hunger: ' + hunger;
       sndEat.play();
     break;
-    case DOWNFISH:
+    case DOWNFISH: // todo?
       motivation-=50;
       sndDownFish.play();
     break
-    case IDEAFAIRY:
+    case IDEAFAIRY: // todo?
       ideaCount++;
       sndIdeaFairy.play();
     break
-    case NINTENDO:
+    case NINTENDO: // todo
       motivation+=25;
       textMotivation.text = 'motivation: ' + motivation;
       sndPlayNintendo.play();
+    break
+    case WORKSTATION: // todo
+      sndWorkstation.play();
     break
     
     }
