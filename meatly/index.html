@@ -2,7 +2,7 @@
 <html lang="en"> 
 <head> 
 	<meta charset="UTF-8" />
-	<title>all things the meatly proto</title>
+	<title>hurry up! all things the meatlyjam</title>
 	<script type="text/javascript" src="js/phaser.js"></script>
     <style type="text/css">
         body {
@@ -167,7 +167,7 @@ function create() {
       // simple function to insert entities
       createEntity = function(x,y,name,frame, scale, jumping){
           scale = scale || 0.3;
-          jumping = jumping || true
+          if(jumping === undefined) jumping = true;
           var group = entA[Math.floor(y/groupHeight)];
           var so = createShadowedObject(x,y, group, 'meatly', frame, scale, 0.8);
           so.name = name;
@@ -179,7 +179,7 @@ function create() {
       }
       // create Level
       // page1 hello
-      addText(280, 80, '`hurry up`\nyou need to dev for the\n`#meatlyjam`', { fontSize: '64px', fill: '#000'}, 30, gBg);
+      addText(280, 80, '`hurry up` dude\nyou need to dev for the\n`#meatlyjam`', { fontSize: '64px', fill: '#000'}, 30, gBg);
       addText(800-32, 600, 'come over here', { fontSize: '32px', fill: '#000'}, -90, gBg);
       game.add.sprite(0,0,'meatly',62,gBg).scale.setTo(0.5,0.5);
       // page2 introduce food
@@ -211,11 +211,17 @@ function create() {
       addText(7400, 300, '`just coding` does `not`\n'+
                          'improve your project `much`. we need good `ideas`', { fontSize: '64px', fill: '#000'}, 0, gBg);
       addText(7400+14*64, 300+54, '`great', { fontSize: '72px', fill: '#000'}, 30, gBg);
-      addText(8600, 600, 'catch some `idea fairies`', { fontSize: '32px', fill: '#000'}, -90, gBg);
+      addText(8600, 600, 'catch the `idea fairy`', { fontSize: '32px', fill: '#000'}, -90, gBg);
       createEntity(8400+910,150, IDEAFAIRY, 52, 0.1 ).velocity.x= -170;
-      createEntity(8400+950,200, IDEAFAIRY, 52, 0.13).velocity.x= -200;
-      createEntity(8400+800,430, IDEAFAIRY, 52, 0.15).velocity.x= -250;
-      createEntity(8400+930,390, IDEAFAIRY, 52, 0.12).velocity.x= -200;
+      addText(9000, 200, 'now `implement` it!', { fontSize: '72px', fill: '#000'}, 0, gBg);
+      createEntity(9550,400, WORKSTATION, 49, 0.5, false).events.onKilled.add(function(){projectTimeStart=game.time.time;}); // reset timer on collision
+      addText(9550, 500, 'And the race `begins`', { fontSize: '80px', fill: '#000'}, 0, gBg);
+      addText(10500, 200, '`hurry up`!', { fontSize: '100px', fill: '#000'}, 0, gBg);
+      addText(10500, 300, 'developed by `nitzel`', { fontSize: '32px', fill: '#000'}, 0, gBg);
+      addText(10500, 350, 'for', { fontSize: '50px', fill: '#000'}, 0, gBg);
+      addText(10500, 450, '`meatly`jam', { fontSize: '72px', fill: '#000'}, -10, gBg);
+      
+      
       
       
       /*
@@ -249,7 +255,7 @@ function create() {
       // create workStations
       for (var i = 0; i < 2; i++)
       {
-          var so = createEntity(1800,100+i*400, WORKSTATION, 48, 0.5, false);
+          var so = createEntity(1800,100+i*400, WORKSTATION, 49, 0.5, false);
       }
       */
     }

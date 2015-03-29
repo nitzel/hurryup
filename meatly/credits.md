@@ -11,6 +11,9 @@ You can find the Creative Commons Licens here: [CC3](http://creativecommons.org/
   - `down.wav` by [themusicalnomad](https://www.freesound.org/people/themusicalnomad/sounds/253886/) under CC0
   - `idea.wav` by [airblock](https://www.freesound.org/people/airblock/sounds/268204/) under CC0
   - `keystrokes.wav` by [dmadridp](https://www.freesound.org/people/dmadridp/sounds/233476/) under CC3
-  
-  
-  
+
+# Thanks for whatever
+- `ideas and tipps`
+  - Primox
+- `phaser.io` (that is the js lib!)
+  - oh well, that's kind of important. Thank you photonstorm!
