@@ -33,6 +33,8 @@ submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.co
 - 09:02 workstations increment project progress and drain ideas/food/motivation (depending on how much you have)
 - 11:17 fiddled around too long with the HUD, looks like time is running out. 7 hours left. **Shuuuu**
 - 11:46 progress bar!! in HuD
+- 12:00 boss is watching you aka time is running out
+- 12:48 now we deal with pause-time :) its not subtracted from the time you have
 
 
 # [credits](credits.md)

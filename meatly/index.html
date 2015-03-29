@@ -117,10 +117,13 @@ function preload() {
 function create() {
     game.world.setBounds(0,0,1600,600);
 
-
     // physics is just collision and movement
     game.physics.startSystem(Phaser.Physics.ARCADE);
-
+    
+    // set resume-callback to correct timer
+    game.onResume.add(function(){projectTimeStart+=game.time.pauseDuration;console.log(game.time.pauseDuration+'\n')});
+    
+    
     //  A simple background for our game
     var bg = game.add.sprite(0, 0, 'sky');
     bg.fixedToCamera = true;
@@ -255,10 +258,13 @@ function create() {
     projectTimeStart = game.time.time;
 }
 
+function getMotivationFrame(){
+  //     :-|          :)                 :(
+  return 17 + (motivation>=75?2:0) + (motivation<=25?4:0);
+}
 function updateHud(){
   // MOTIVATION
-  //                      :-|          :)                 :(
-  var newMotivationFrame = 17 + (motivation>=75?2:0) + (motivation<=25?4:0);
+  var newMotivationFrame = getMotivationFrame();
   if(newMotivationFrame != hud.motivation.frame){ // changed, give it a tween
     game.add.tween(hud.motivation.scale).to( {x: 0.8, y: 0.8}, 200, Phaser.Easing.Quadratic.InOut, true, 0, 0, true)
   }
@@ -324,13 +330,8 @@ function update() {
     {
         //  Stand still
         player.obj.animations.stop();
-        
-        if(motivation>=50)
-          player.obj.frame = 19;
-        else if (motivation>=25)
-          player.obj.frame = 17;
-        else 
-          player.obj.frame = 21
+        // give it a smile or not
+        player.obj.frame = getMotivationFrame();
     }
     
     updateHud();
