@@ -1,8 +1,10 @@
 # [GOTO: game](index.html)
 ![screenshot](screen.png)
 # meatly
-submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.com "tada")
-**DAMN IT!** its not working as it should. That means, there is only a tutorial playable :(
+- **DAMN IT!** its not working as it should. That means, there is only a tutorial playable. Everything after it may be stuttering. If you know how to fix that, please dont hesitate to contact me!
+- submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.com "tada")
+- my first gamejam!
+- I have never done anything with `phaser.js` before. So all the knowledge had to be earned within these 48 hours
 # timeline (GMT+1)
 - 16:00 uff, exam is over! Lets get home.
 - 17:00 meatlyjam starts! My first gamejam!!! Wuhu :banana:
@@ -41,3 +43,7 @@ submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.co
 # [credits](credits.md)
 - 14:57 WUHU **Z-ORDER** WORKS!!! :banana: !!! YEAH!
 - 15:50 The first parts of the introduction level are done :)
+- ... (not sure what happened here)
+- before 18:00 I submitted the game
+- after 18:00 mail from themeatly: github.io is not working (my host). *fuuuu*
+- even later ... now it does :)
