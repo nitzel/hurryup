@@ -61,6 +61,8 @@ var motivation = 0;
 var hunger = 100;
 var ideaCount = 0;
 var projectProgress = 0;
+var projectTimeStart = 0; // change later maybe
+const PROJECT_TIME = 60; // 60seconds
 
 // sounds
 var sndStep;
@@ -195,16 +197,6 @@ function create() {
     sndDownFish  = game.add.audio('down_fish');
     sndWorkstation  = game.add.audio('key_strokes');
     
-    //  The score, will be in front of everything
-    textHunger = game.add.text(16, 16, 'hunger: `'+hunger, { fontSize: '32px', fill: '#000'/*'#B03A00'*/ });
-    textHunger.fixedToCamera = true;
-    colorText(textHunger);
-    textMotivation = game.add.text(16, 48, 'motivation: `'+motivation, { fontSize: '32px', fill: '#000'});
-    textMotivation.fixedToCamera = true;
-    colorText(textMotivation);
-    textProgress = game.add.text(16, 80, 'project: `'+projectProgress+'%', { fontSize: '32px', fill: '#000'});
-    textProgress.fixedToCamera = true;
-    colorText(textProgress);
     // setup hud
     {
       hud = game.add.sprite(256,256,'meatly', 56);
@@ -227,6 +219,12 @@ function create() {
       hud.star.pivot.setTo(hud.star.width/2,hud.star.height/2);
       hud.star.scale.setTo(0.3,0.3);
       hud.star.position.setTo(hud.star.width/2,550);
+      // proj boss=indicator of time left till boss comes to check project
+      hud.boss = game.add.sprite(0,0,'meatly', 55);
+      hud.boss.pivot.setTo(hud.boss.width/2,hud.boss.height/2);
+      hud.boss.scale.setTo(0.3,0.3);
+      hud.boss.position.setTo(hud.boss.width/2,550);
+      
       hud.ideas = [];
       for(var i=0; i<10; i++){
         ide = game.add.sprite(0,0,'meatly', 53);
@@ -241,6 +239,7 @@ function create() {
       hud.addChild(hud.hunger);
       hud.addChild(hud.progress);
       hud.addChild(hud.star);
+      hud.addChild(hud.boss);
       hud.scale.setTo(0.5,0.5);
       hud.angle = 2;
       hud.position.setTo(120,120);
@@ -252,6 +251,8 @@ function create() {
     
     //let camera follow the player
     game.camera.target = player;
+    
+    projectTimeStart = game.time.time;
 }
 
 function updateHud(){
@@ -280,11 +281,12 @@ function updateHud(){
       }
     }
   }
-  // Project Progress / crop
-  //hud.progress.crop(new Phaser.Rectangle(0,0,40+(512-100)/100*projectProgress, 512));
-  
+  // update project progress
   if(!game.tweens.isTweening(hud.star.position))
     game.add.tween(hud.star.position).to( {x: 80+projectProgress*(512-2*80)/100}, 200, Phaser.Easing.Quadratic.InOut, true, 0, 0, false)
+  // update time left
+  if(!game.tweens.isTweening(hud.boss.position))
+    game.add.tween(hud.boss.position).to( {x: Math.max(80, 512-80-(game.time.elapsedSecondsSince(projectTimeStart))*(512-2*80.0)/PROJECT_TIME)}, 200, Phaser.Easing.Quadratic.InOut, true, 0, 0, false)
 }
 
 function update() {
@@ -307,7 +309,7 @@ function update() {
         player.body.velocity.y = -1;
       else if(down)
         player.body.velocity.y =  1;
-      player.body.velocity.normalize().multiply(400,400); // speed of 400 in every direction
+      player.body.velocity.normalize().multiply(600,600); // speed of 400 in every direction
     }
     
     if (left)
@@ -380,10 +382,6 @@ function collideEntities (player, ent) {
     motivation = Math.min(100,motivation);
     hunger = Math.max(0,hunger);
     hunger = Math.min(100,hunger);
-    
-    textMotivation.text = 'motivation: ' + motivation;
-    textHunger.text = 'hunger: ' + hunger;
-    textProgress.text = 'project: ' + projectProgress + '%';
 }
 
 function animPlayer(sprite, animation) {
