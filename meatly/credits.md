@@ -1,5 +1,6 @@
 # Thanks for letting me use all these assets :)
 You can find the Creative Commons Licens here: [CC3](http://creativecommons.org/licenses/by/3.0/), [CC0](http://creativecommons.org/publicdomain/zero/1.0/)
+
 - `img/`
   - `meatlyjam01spritesheet.png` by [meatlyjam.com](https://www.meatlyjam.com) for this jam
   - `sky.png` from the phaser-tutorial
@@ -14,6 +15,6 @@ You can find the Creative Commons Licens here: [CC3](http://creativecommons.org/
 
 # Thanks for whatever
 - `ideas and tipps`
-  - Primoz
+  - Primož
 - `phaser.io` (that is the js lib!)
   - oh well, that's kind of important. Thank you photonstorm!
