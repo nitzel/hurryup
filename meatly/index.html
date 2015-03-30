@@ -228,7 +228,7 @@ function create() {
             so.obj.frame = frame;
             so.scale.setTo(scale,scale);
           } else {  
-            console.log('pool empty');
+            //console.log('pool empty');
             so=createShadowedObject(x,y, group, 'meatly', frame, scale, 0.8);
           }
           so.name = name;
@@ -381,7 +381,7 @@ function update() {
         if(etyType & (IDEAFAIRY | DOWNFISH)){
           ent.velocity.x = game.rnd.integerInRange(-400,-50);
         }
-        console.log(etyId);
+        //console.log(etyId);
       }
       posLastSpawn = pos.x;
     }
@@ -444,16 +444,16 @@ function update() {
 }
 // called for postrendering, eg for debugging body-boxes
 function render(){
-    game.debug.body(player);
-    entA.forEach(function(ents){
-      ents.forEach(function(ent){
-        game.debug.body(ent);
-      });
-    });
+    //game.debug.body(player);
+    //entA.forEach(function(ents){
+    //  ents.forEach(function(ent){
+    //    game.debug.body(ent);
+    //  });
+    //});
 }
 // collision callback
 function collideEntities (player, ent) {
-  console.log('bam collide!' + ent.name);
+  //console.log('bam collide!' + ent.name);
   if(ent.name & (DOWNFISH | IDEAFAIRY | FOOD | NINTENDO | WORKSTATION)){
     // Removes the food from the screen
     ent.kill();
@@ -621,7 +621,7 @@ function createShadowedObject(x, y, group, spritesheet, frame, compositScale, sh
       function(ent){
          // remove the kill-listener for outOfBounds
          // on recycle it will be added automatically again, when the entity enters the world
-        console.log('kill');
+        //console.log('kill');
         ent.velocity.setTo(0,0);
         ent.body.velocity.setTo(0,0);
         ent.events.onOutOfBounds.removeAll();
