@@ -14,6 +14,6 @@ You can find the Creative Commons Licens here: [CC3](http://creativecommons.org/
 
 # Thanks for whatever
 - `ideas and tipps`
-  - Primox
+  - Primoz
 - `phaser.io` (that is the js lib!)
   - oh well, that's kind of important. Thank you photonstorm!
