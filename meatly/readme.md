@@ -1,7 +1,6 @@
 # [GOTO: game](index.html)
 ![screenshot](screen.png)
 # meatly
-- **DAMN IT!** its not working as it should. That means, there is only a tutorial playable. Everything after it may be stuttering. If you know how to fix that, please dont hesitate to contact me!
 - submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.com "tada")
 - my first gamejam!
 - I have never done anything with `phaser.js` before. So all the knowledge had to be earned within these 48 hours
@@ -41,10 +40,15 @@
 - 13:11 hunger and motivation grow now by time, and its checked that they stay in range.
 - 13:53 entities start moving as soon as they enter "world" which is close to view. they get destroyed when they leave it again.
 - 14:21 adapted sound-volumes. and player got also destroyed, fixed that
-# [credits](credits.md)
 - 14:57 WUHU **Z-ORDER** WORKS!!! :banana: !!! YEAH!
 - 15:50 The first parts of the introduction level are done :)
 - ... (not sure what happened here)
 - before 18:00 I submitted the game
 - after 18:00 mail from themeatly: github.io is not working (my host). *fuuuu*
 - even later ... now it does :)
+- **DAMN IT!** its not working as it should. That means, there is only a tutorial playable. Everything after it may be stuttering. If you know how to fix that, please dont hesitate to contact me!
+# later ...
+- looks like github was under a huuuuge DoS attack... for DAYS!
+- now spawning works with a pool of sprites and different collision detection :confused: however, it works.
+
+# [credits](credits.md)
