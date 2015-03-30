@@ -41,6 +41,10 @@ stateLoad.prototype =
 game.state.add('stateLoad', stateLoad);
 game.state.start('stateLoad');*/
 
+// gesturing
+var swipe = {x:0, y:0, x2:0, y2:0, minDist: 20, dist:0, angle:0, on:false, swiping:false};
+
+
 // entities
 var player;
 // groups
@@ -128,6 +132,36 @@ function create() {
     
     // set resume-callback to correct timer
     game.onResume.add(function(){projectTimeStart+=game.time.pauseDuration;});
+
+    // gesturing
+    game.input.onDown.add(function(pointer) {
+      swipe.x = pointer.clientX;
+      swipe.y = pointer.clientY;
+
+      swipe.x2 = pointer.clientX;
+      swipe.y2 = pointer.clientY;
+
+      swipe.angle = 0;
+      swipe.dist = 0;
+      swipe.swiping = swipe.dist>=swipe.minDist;
+      swipe.on=true;
+    }, this);
+    game.input.addMoveCallback(function(pointer) {
+      if(swipe.on){  
+        swipe.x2 = pointer.clientX;
+        swipe.y2 = pointer.clientY;
+        
+        var dx = swipe.x2-swipe.x
+        var dy = swipe.y2-swipe.y
+        swipe.angle = (Math.atan2(dx,dy)*180/Math.PI+360)%360; // in degrees
+        swipe.dist = Math.sqrt(dx*dx + dy*dy);
+        swipe.swiping = swipe.dist>=swipe.minDist;
+      }
+    }, this);   
+    game.input.onUp.add(function(pointer){
+      swipe.on = false;
+    }, this);
+    
     
     // configure sounds
     sndStep        = game.add.audio('step_concrete');    sndStep        .volume = 4;
@@ -400,6 +434,25 @@ function update() {
   var down  = cursors.down.isDown ;
   var left  = cursors.left.isDown ;
   var right = cursors.right.isDown;
+  
+  // check for touch input (pushing relative to player)
+  var dx = swipe.x2-(player.body.center.x - game.camera.view.x);
+  var dy = swipe.y2-(player.body.center.y - game.camera.view.y);
+  var angle = (Math.atan2(dx,dy)*180/Math.PI+360)%360; // in degrees
+  var dist = Math.sqrt(dx*dx + dy*dy);
+  var swiping = dist>=swipe.minDist;
+  if(swipe.on && swiping){
+    var d = Math.round(angle/45);
+    console.log('d='+d);
+    // how it works: d==...
+    //0/360 - 0/8
+    //45 - 1
+    //90 - 2 ...
+    down  =  d==7 || d==8 || d==0 || d==1;
+    right =  d==1 ||         d==2 || d==3;
+    up    =  d==3 ||         d==4 || d==5;
+    left  =  d==5 ||         d==6 || d==7;
+  }
   
   if(left || up || down || right) { // moving
     if(left)
