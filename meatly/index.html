@@ -553,7 +553,8 @@ function updateHud(){
   // MOTIVATION
   var newMotivationFrame = getMotivationFrame();
   if(newMotivationFrame != hud.motivation.frame){ // changed, give it a tween
-    game.add.tween(hud.motivation.scale).to( {x: 0.8, y: 0.8}, 200, Phaser.Easing.Quadratic.InOut, true, 0, 0, true)
+    if(!game.tweens.isTweening(hud.motivation.scale))
+      game.add.tween(hud.motivation.scale).to( {x: 0.8, y: 0.8}, 200, Phaser.Easing.Quadratic.InOut, true, 0, 0, true)
   }
   hud.motivation.frame = newMotivationFrame;
   // HUNGER
