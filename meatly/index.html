@@ -45,6 +45,8 @@ game.state.start('stateLoad');*/
 var player;
 // groups
 var entA = []; // array to sort entities depending on y-value (which is like z)
+entA.pool; // pool for dead entities
+
 var gBg; // background group
 // guys standing around blocking you ... whut!
 // that devil thing
@@ -158,6 +160,21 @@ function create() {
     // create entities
     var hud_position; // the hud will be created here as an obj on the map
     {
+      // set up pool
+      entA.pool = game.add.group();
+      entA.pool.enableBody = true;
+      entA.removeChild = function(child){
+        entA.pool.removeChild(child); // maybe in pool
+        entA.forEach(function(ents){ // or in layers
+          ents.removeChild(child);});
+        
+        return child;
+      }
+      entA.childToPool = function(child){
+        entA.removeChild(child);
+        entA.pool.addChild(child);
+        return child;
+      }
       // first we need some groups
       var groupHeight = 23;//Math.floor(player.body.height);
       var groupCount = Math.ceil(game.world.height/groupHeight);
@@ -169,18 +186,64 @@ function create() {
         entA.push(group);
       }
       // simple function to insert entities
+      createPoolEntity = function(){
+          var x = 0;
+          var y = 0;
+          var group = entA.pool;
+          var frame = 54;
+          var scale = 1;
+          var name = 0;
+          var so = createShadowedObject(x,y, group, 'meatly', frame, scale, scale);
+          so.name = name;
+          
+          so.kill(); // mark as dead
+          
+          return so;
+      }
+      for(var i=0; i<1000; i++){ // fill pool
+        createPoolEntity();
+      }
+      // simple function to insert entities
       createEntity = function(x,y,name,frame, scale, jumping){
           scale = scale || 0.3;
           if(jumping === undefined) jumping = true;
           var group = entA[Math.floor(y/groupHeight)];
-          var so = createShadowedObject(x,y, group, 'meatly', frame, scale, 0.8);
+          // to turn collision and stuttering on, replace 
+          // the next line with
+          // var so = null;
+          var so = entA.pool.getBottom();
+          if(so!=null){ // cache/pool successfull
+            entA.removeChild(so); // remove from pool // not sure if necessary
+            // move to new group
+            group.addChild(so); // insert to correct group
+            so.revive(); // revive
+            // reset
+            game.tweens.removeFrom(so.obj.position);
+            game.tweens.removeFrom(so.shadow.scale);
+            // reset attributes
+            so.shadow.scale.setTo(0.8);
+            so.obj.position.y = -128; //stupid magic numbers, sorry!
+            // use new attributes
+            so.position.setTo(x,y);
+            so.obj.frame = frame;
+            so.scale.setTo(scale,scale);
+          } else {  
+            console.log('pool empty');
+            so=createShadowedObject(x,y, group, 'meatly', frame, scale, 0.8);
+          }
           so.name = name;
+          
+          // new tweens
           if(jumping){
             game.add.tween(so.obj.position).to( { y: -300 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);
             game.add.tween(so.shadow.scale).to( { y: 0.9, x:0.9 }, 800, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);  
           }
           return so;
       }
+      // todo remove
+      createEntity(150,500, FOOD, 57, 0.1)
+      createEntity(200,450, FOOD, 57, 0.1)
+      createEntity(250,400, FOOD, 57, 0.1)
       // create Level
       // page1 hello
       addText(280, 80, '`hurry up` dude\nyou need to dev for the\n`#meatlyjam`', { fontSize: '64px', fill: '#000'}, 30, gBg);
@@ -328,10 +391,12 @@ function update() {
   hunger += INCREASE_RATE_HUNGER*game.time.elapsed/1000;
   motivation += INCREASE_RATE_MOTIVATION*game.time.elapsed/1000;
   
-  entA.forEach(function(ents){
-    game.physics.arcade.overlap(player, ents, collideEntities, null, this);
-  });
-      //  Reset the players velocity (movement)
+  // collision detection
+  //entA.forEach(function(ents){
+  //  game.physics.arcade.overlap(player, ents, collideEntities, null, this);
+  //});
+  game.physics.arcade.overlap(player, entA.pool, collideEntities, null, this);
+  //  Reset the players velocity (movement)
   player.body.velocity.x = 0;
   player.body.velocity.y = 0;
   
@@ -379,13 +444,16 @@ function update() {
 }
 // called for postrendering, eg for debugging body-boxes
 function render(){
-    //game.debug.body(player);
-    //entities.forEach(function(ent){
-      //game.debug.body(ent);
-    //});
+    game.debug.body(player);
+    entA.forEach(function(ents){
+      ents.forEach(function(ent){
+        game.debug.body(ent);
+      });
+    });
 }
 // collision callback
 function collideEntities (player, ent) {
+  console.log('bam collide!' + ent.name);
   if(ent.name & (DOWNFISH | IDEAFAIRY | FOOD | NINTENDO | WORKSTATION)){
     // Removes the food from the screen
     ent.kill();
@@ -511,7 +579,7 @@ function createShadowedObject(x, y, group, spritesheet, frame, compositScale, sh
     // create composit 
     var composit;
     if(group==undefined){
-      composit = game.add.sprite(x,y,null);
+      composit = game.add.sprite(x,y,null,null,group);
       game.physics.arcade.enable(composit);
     }
     else 
@@ -522,7 +590,6 @@ function createShadowedObject(x, y, group, spritesheet, frame, compositScale, sh
     composit.scale.setTo(shadowScale,shadowScale);
     const RW = 256*shadowScale; // radius horizontal
     const RH = 128*shadowScale; // radius vertical
-    //composit.body.setSize(SHADOW_RH*2,SHADOW_RV*2,512/2-SHADOW_RH*2,256/2-SHADOW_RH*2);
     
     x = (composit.body.width/2-RW)*compositScale;
     y = (composit.body.height/2-RH)*compositScale;
@@ -545,9 +612,20 @@ function createShadowedObject(x, y, group, spritesheet, frame, compositScale, sh
         ent.body.velocity = ent.velocity; 
         ent.events.onOutOfBounds.add(
           function(ent2){
-            ent2.destroy();
+            ent2.kill();
           }
         );
+      }
+    );
+    composit.events.onKilled.add(
+      function(ent){
+         // remove the kill-listener for outOfBounds
+         // on recycle it will be added automatically again, when the entity enters the world
+        console.log('kill');
+        ent.velocity.setTo(0,0);
+        ent.body.velocity.setTo(0,0);
+        ent.events.onOutOfBounds.removeAll();
+        entA.childToPool(ent); // remove from groups and add to pool for recycling
       }
     );
     // return it
