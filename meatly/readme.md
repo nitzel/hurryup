@@ -50,5 +50,5 @@
 # later ...
 - looks like github was under a huuuuge DoS attack... for DAYS!
 - now spawning works with a pool of sprites and different collision detection :confused: however, it works.
-
+- added **touch** and mouse input :) Arrows were fine, but mouse is nice!
 # [credits](credits.md)
