@@ -1,4 +1,4 @@
-# [GOTO: game](index.html)
+# [GOTO: game](http://nitzel.github.io/hurryup/meatly/index.html)
 ![screenshot](screen.png)
 # meatly
 - submission to the 1st meatlyjam ever [www.meatlyjam.com](http://www.meatlyjam.com "tada")
